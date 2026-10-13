@@ -1,0 +1,30 @@
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Backend (Gradle / Java)
+backend/.gradle/
+backend/build/
+backend/out/
+backend/data/
+backend/*.log
+*.class
+
+# Frontend (Flutter / Dart)
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.pub-cache/
+app/.pub/
+app/build/
+app/.widget_preview/
+
+# Environment & Secrets
+.env
+*.env
+*.local
