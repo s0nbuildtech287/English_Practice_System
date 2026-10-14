@@ -75,4 +75,13 @@ public class ArticleController {
         Article saved = articleService.saveArticle(article);
         return ResponseEntity.ok(ApiResponse.ok("Tạo bài đọc thành công", ArticleResponse.fromEntity(saved)));
     }
+
+    @PostMapping("/crawl")
+    @Operation(summary = "Cào / Nạp thêm bài đọc học thuật mới từ nguồn trực tuyến")
+    public ResponseEntity<ApiResponse<ArticleResponse>> crawlArticle(
+            @RequestParam(required = false, defaultValue = "Technology") String topic,
+            @RequestParam(required = false, defaultValue = "B2") String level) {
+        Article article = articleService.crawlNewArticle(topic, level);
+        return ResponseEntity.ok(ApiResponse.ok("Đã cào và nạp thành công bài đọc mới lên đầu trang!", ArticleResponse.fromEntity(article)));
+    }
 }

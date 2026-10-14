@@ -1098,7 +1098,7 @@
       </div>
 
       <!-- FILTER CONTROLS -->
-      <div class="filter-bar">
+      <div class="filter-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.85rem;">
         <div class="level-pills" id="readingLevelFilters">
           <button class="pill-btn active" onclick="filterReading('ALL')">Tất cả cấp độ</button>
           <button class="pill-btn" onclick="filterReading('A1')">A1</button>
@@ -1108,14 +1108,35 @@
           <button class="pill-btn" onclick="filterReading('C1')">C1</button>
           <button class="pill-btn" onclick="filterReading('C2')">C2</button>
         </div>
-        <div>
-          <button class="btn-action-outline" onclick="openBookmarkList()">Bài Đã Đánh Dấu</button>
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+          <select id="readingTopicSelect" onchange="filterReadingTopic(this.value)" style="padding: 0.5rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; font-size: 0.82rem;">
+            <option value="ALL">Tất cả chủ đề</option>
+            <option value="Technology">Công nghệ & AI</option>
+            <option value="Health">Y tế & Sức khỏe</option>
+            <option value="Environment">Môi trường & Sinh thái</option>
+            <option value="Business">Kinh tế & Chuỗi cung ứng</option>
+            <option value="Psychology">Tâm lý & Nhận thức</option>
+            <option value="Philosophy">Triết học & Ngôn ngữ</option>
+            <option value="Daily Life">Đời sống & Du lịch</option>
+          </select>
+          <button class="btn-action-outline" onclick="openBookmarkList()" style="font-size: 0.82rem; padding: 0.5rem 0.8rem;">Bài Đã Đánh Dấu</button>
+          <button class="btn-action-primary" onclick="openCrawlArticleModal()" style="font-size: 0.82rem; padding: 0.5rem 0.95rem; background: var(--oxford-blue); white-space: nowrap;">+ Cào Thêm Bài Đọc Mới</button>
         </div>
       </div>
 
       <!-- ARTICLES LIST -->
       <div id="articlesGrid" class="grid-cards">
         <!-- Rendered via JS -->
+      </div>
+
+      <!-- READING PAGINATION BAR -->
+      <div id="readingPaginationBar" style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1.25rem; border: 1px solid var(--border); background: var(--bg-surface-elevated); border-radius: var(--radius-md); margin-top: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="font-size: 0.85rem; color: var(--text-sub);">
+          Hiển thị <strong id="readingPageRange" style="color: #FFFFFF;">0 - 0</strong> trên tổng số <strong id="readingTotalCount" style="color: #93C5FD;">0</strong> bài đọc học thuật
+        </div>
+        <div style="display: flex; gap: 0.35rem; align-items: center;" id="readingPaginationBtns">
+          <!-- Rendered dynamically -->
+        </div>
       </div>
 
       <!-- ARTICLE DETAIL / READER VIEW MODAL -->
@@ -1696,6 +1717,45 @@
     <button class="bottom-nav-item" onclick="switchNav('ai')">AI Tutor</button>
   </div>
 
+  <!-- MODAL: CÀO THÊM BÀI ĐỌC HỌC THUẬT -->
+  <div id="crawlArticleModal" style="display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); width: 100%; max-width: 520px; padding: 1.75rem; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: #FFFFFF;">Cào & Nạp Bài Đọc Học Thuật Mới</h3>
+        <button onclick="closeCrawlArticleModal()" style="font-size: 1.25rem; color: var(--text-sub); cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 1.25rem; line-height: 1.5;">
+        Hệ thống sẽ kết nối trực tiếp đến các cổng học liệu mở quốc tế (Wikipedia REST, Global Academic Portal, Oxford/VOA Corpus) để cào dữ liệu bài viết mới, tích hợp âm thanh đọc và tự động xếp lên đầu danh sách bài đọc (Trang 1).
+      </p>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-bottom: 0.35rem; text-transform: uppercase;">Chủ Đề Cần Cào (Topic)</label>
+        <select id="crawlTopicInput" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; font-size: 0.9rem;">
+          <option value="Technology">Công nghệ, Trí tuệ nhân tạo & Điện toán</option>
+          <option value="Health">Y học, Thần kinh & Sức khỏe cộng đồng</option>
+          <option value="Environment">Môi trường, Sinh thái biển & Khí hậu</option>
+          <option value="Business">Kinh tế học, Chuỗi cung ứng & Tài chính</option>
+          <option value="Psychology">Tâm lý học nhận thức & Hành vi</option>
+          <option value="Philosophy">Triết học, Ngôn ngữ học & Nhận thức luận</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-bottom: 0.35rem; text-transform: uppercase;">Cấp Độ CEFR Mục Tiêu</label>
+        <select id="crawlLevelInput" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; font-size: 0.9rem;">
+          <option value="B2" selected>CEFR B2 — Upper-Intermediate (IELTS 6.0 - 7.0)</option>
+          <option value="C1">CEFR C1 — Advanced Academic (IELTS 7.5 - 8.0)</option>
+          <option value="C2">CEFR C2 — Native Mastery (IELTS 8.5 - 9.0)</option>
+          <option value="B1">CEFR B1 — Intermediate (IELTS 5.0 - 5.5)</option>
+          <option value="A2">CEFR A2 — Elementary</option>
+          <option value="A1">CEFR A1 — Foundation</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button class="btn-action-outline" onclick="closeCrawlArticleModal()">Hủy</button>
+        <button id="btnSubmitCrawlArticle" class="btn-action-primary" style="background: var(--oxford-blue);" onclick="submitCrawlArticle()">Bắt Đầu Cào Nạp</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ACADEMIC TOAST -->
   <div id="academicToast">Thông báo học thuật</div>
 
@@ -1951,13 +2011,19 @@
     // ========================================================
     // MODULE 1: READING PASSAGES & INTERACTIVE LOOKUP
     // ========================================================
+    let readingCurrentPage = 1;
+    const readingPageSize = 6;
+    let readingCurrentLevel = 'ALL';
+    let readingCurrentTopic = 'ALL';
+    let newlyCrawledArticleIds = new Set();
+
     async function loadArticles() {
       try {
         const res = await fetch(`${API_BASE}/articles`);
         const json = await res.json();
         if (json.success && json.data) {
           articlesData = json.data;
-          renderArticlesList(articlesData);
+          renderArticlesWithPagination();
         }
       } catch (err) {
         console.warn('API /articles offline, using standard CEFR data suite');
@@ -1965,30 +2031,75 @@
     }
 
     function filterReading(lvl) {
+      readingCurrentLevel = lvl;
       document.querySelectorAll('#readingLevelFilters .pill-btn').forEach(btn => {
         btn.classList.toggle('active', btn.innerText.includes(lvl) || (lvl === 'ALL' && btn.innerText.includes('Tất cả')));
       });
-      if (lvl === 'ALL') {
-        renderArticlesList(articlesData);
-      } else {
-        renderArticlesList(articlesData.filter(a => a.level && a.level.toUpperCase() === lvl.toUpperCase()));
-      }
+      readingCurrentPage = 1;
+      renderArticlesWithPagination();
     }
 
-    function renderArticlesList(list) {
+    function filterReadingTopic(topic) {
+      readingCurrentTopic = topic;
+      readingCurrentPage = 1;
+      renderArticlesWithPagination();
+    }
+
+    function getFilteredArticles() {
+      return articlesData.filter(a => {
+        const matchLevel = (readingCurrentLevel === 'ALL') || (a.level && a.level.toUpperCase() === readingCurrentLevel.toUpperCase());
+        const matchTopic = (readingCurrentTopic === 'ALL') || (a.topic && a.topic.toLowerCase().includes(readingCurrentTopic.toLowerCase()));
+        return matchLevel && matchTopic;
+      });
+    }
+
+    function setReadingPage(page) {
+      const filtered = getFilteredArticles();
+      const totalPages = Math.ceil(filtered.length / readingPageSize) || 1;
+      if (page < 1 || page > totalPages) return;
+      readingCurrentPage = page;
+      renderArticlesWithPagination();
+      const grid = document.getElementById('articlesGrid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderArticlesWithPagination() {
       const container = document.getElementById('articlesGrid');
-      if (!list || list.length === 0) {
-        container.innerHTML = '<div style="color: var(--text-sub); padding: 2rem;">Chưa có bài đọc nào cho cấp độ này.</div>';
+      const paginationBar = document.getElementById('readingPaginationBar');
+      const filtered = getFilteredArticles();
+      const total = filtered.length;
+
+      if (!filtered || total === 0) {
+        container.innerHTML = '<div style="color: var(--text-sub); padding: 2.5rem; text-align: center; grid-column: 1 / -1;">Chưa có bài đọc nào phù hợp với bộ lọc đã chọn. Hãy bấm "+ Cào Thêm Bài Đọc Mới".</div>';
+        if (paginationBar) paginationBar.style.display = 'none';
         return;
       }
 
-      container.innerHTML = list.map(a => {
+      if (paginationBar) paginationBar.style.display = 'flex';
+
+      const totalPages = Math.ceil(total / readingPageSize) || 1;
+      if (readingCurrentPage > totalPages) readingCurrentPage = totalPages;
+
+      const start = (readingCurrentPage - 1) * readingPageSize;
+      const end = Math.min(start + readingPageSize, total);
+      const pageArticles = filtered.slice(start, end);
+
+      const rangeEl = document.getElementById('readingPageRange');
+      const totalEl = document.getElementById('readingTotalCount');
+      if (rangeEl) rangeEl.innerText = `${start + 1} - ${end}`;
+      if (totalEl) totalEl.innerText = `${total}`;
+
+      container.innerHTML = pageArticles.map(a => {
         const lvlClass = (a.level || 'B1').toLowerCase();
+        const isNew = newlyCrawledArticleIds.has(a.id);
         return `
-          <div class="academic-card">
+          <div class="academic-card" style="${isNew ? 'border-color: #3B82F6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);' : ''}">
             <div>
               <div class="card-top">
-                <span class="cefr-tag ${lvlClass}">CEFR ${a.level || 'B1'}</span>
+                <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                  <span class="cefr-tag ${lvlClass}">CEFR ${a.level || 'B1'}</span>
+                  ${isNew ? '<span class="cefr-tag b2" style="font-size: 0.65rem; padding: 0.1rem 0.35rem; background: rgba(59, 130, 246, 0.25); color: #93C5FD; border: 1px solid #3B82F6;">Mới Cào</span>' : ''}
+                </div>
                 <span style="font-size: 0.78rem; color: var(--text-muted);">${a.topic || 'General'}</span>
               </div>
               <h4 class="card-title">${a.title}</h4>
@@ -2001,6 +2112,84 @@
           </div>
         `;
       }).join('');
+
+      renderReadingPaginationButtons(totalPages);
+    }
+
+    function renderReadingPaginationButtons(totalPages) {
+      const container = document.getElementById('readingPaginationBtns');
+      if (!container) return;
+
+      let html = '';
+      html += `<button class="pill-btn ${readingCurrentPage === 1 ? 'disabled' : ''}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; cursor: ${readingCurrentPage === 1 ? 'not-allowed' : 'pointer'}; opacity: ${readingCurrentPage === 1 ? '0.5' : '1'};" onclick="setReadingPage(${readingCurrentPage - 1})">← Trang Trước</button>`;
+
+      for (let p = 1; p <= totalPages; p++) {
+        if (p === 1 || p === totalPages || (p >= readingCurrentPage - 1 && p <= readingCurrentPage + 1)) {
+          html += `<button class="pill-btn ${p === readingCurrentPage ? 'active' : ''}" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; min-width: 32px;" onclick="setReadingPage(${p})">${p}</button>`;
+        } else if (p === readingCurrentPage - 2 || p === readingCurrentPage + 2) {
+          html += `<span style="color: var(--text-muted); padding: 0 0.2rem;">...</span>`;
+        }
+      }
+
+      html += `<button class="pill-btn ${readingCurrentPage === totalPages ? 'disabled' : ''}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; cursor: ${readingCurrentPage === totalPages ? 'not-allowed' : 'pointer'}; opacity: ${readingCurrentPage === totalPages ? '0.5' : '1'};" onclick="setReadingPage(${readingCurrentPage + 1})">Trang Sau →</button>`;
+      container.innerHTML = html;
+    }
+
+    function openCrawlArticleModal() {
+      const modal = document.getElementById('crawlArticleModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeCrawlArticleModal() {
+      const modal = document.getElementById('crawlArticleModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function submitCrawlArticle() {
+      const topic = document.getElementById('crawlTopicInput').value;
+      const level = document.getElementById('crawlLevelInput').value;
+      const btn = document.getElementById('btnSubmitCrawlArticle');
+
+      btn.disabled = true;
+      btn.innerText = 'Đang Cào Dữ Liệu...';
+      showToast(`Đang kết nối cổng học liệu quốc tế để cào bài đọc [${topic} - ${level}]...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/articles/crawl?topic=${encodeURIComponent(topic)}&level=${encodeURIComponent(level)}`, {
+          method: 'POST'
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+          newlyCrawledArticleIds.add(json.data.id);
+          showToast(json.message || 'Đã cào nạp thành công bài đọc mới lên đầu trang!');
+          closeCrawlArticleModal();
+          
+          // Re-fetch fresh articles list
+          const freshRes = await fetch(`${API_BASE}/articles`);
+          const freshJson = await freshRes.json();
+          if (freshJson.success && freshJson.data) {
+            articlesData = freshJson.data;
+            readingCurrentLevel = 'ALL';
+            readingCurrentTopic = 'ALL';
+            const topicSelect = document.getElementById('readingTopicSelect');
+            if (topicSelect) topicSelect.value = 'ALL';
+            document.querySelectorAll('#readingLevelFilters .pill-btn').forEach(b => {
+              b.classList.toggle('active', b.innerText.includes('Tất cả'));
+            });
+            readingCurrentPage = 1;
+            renderArticlesWithPagination();
+            const grid = document.getElementById('articlesGrid');
+            if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } else {
+          showToast('Không thể cào bài viết lúc này. Vui lòng thử lại.');
+        }
+      } catch (e) {
+        showToast('Lỗi kết nối khi cào bài viết.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Bắt Đầu Cào Nạp';
+      }
     }
 
     function openReaderLab(articleId) {
