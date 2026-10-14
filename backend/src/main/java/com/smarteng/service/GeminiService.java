@@ -53,10 +53,11 @@ public class GeminiService {
             .build();
 
     private final List<String> fallbackModels = List.of(
-            "gemini-3.1-flash-lite",
+            "gemini-flash-lite-latest",
+            "gemini-3.5-flash-lite",
+            "gemma-4-31b-it",
             "gemini-flash-latest",
-            "gemini-3.8-flash",
-            "gemini-3.7-flash"
+            "gemini-3.1-flash-lite"
     );
 
     /**
@@ -82,7 +83,7 @@ public class GeminiService {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .header("Content-Type", "application/json")
-                        .timeout(Duration.ofSeconds(3))
+                        .timeout(Duration.ofSeconds(20))
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                         .build();
 
@@ -110,17 +111,26 @@ public class GeminiService {
     }
 
     /**
-     * Explain grammar, sentence structure, or vocabulary in context.
+     * Explain grammar, sentence structure, or vocabulary in context, or act as an interactive academic tutor.
      */
     public String explainInContext(String query, String passageContext) {
-        String prompt = "Bạn là chuyên gia ngôn ngữ tiếng Anh.\n" +
-                "Ngữ cảnh bài đọc: \"" + (passageContext != null ? passageContext : "") + "\"\n" +
-                "Người học thắc mắc: \"" + query + "\"\n\n" +
-                "Hãy giải thích ngắn gọn, rõ ràng theo cấu trúc:\n" +
-                "1. Ý nghĩa chính xác trong ngữ cảnh trên.\n" +
-                "2. Cấu trúc ngữ pháp hoặc từ loại liên quan.\n" +
-                "3. Ví dụ đặt câu ngắn thực tế.\n" +
-                "Trả lời súc tích bằng tiếng Việt.";
+        String prompt;
+        if (passageContext != null && !passageContext.trim().isEmpty()) {
+            prompt = "Bạn là chuyên gia ngôn ngữ tiếng Anh học thuật.\n" +
+                    "Ngữ cảnh bài đọc: \"" + passageContext.trim() + "\"\n" +
+                    "Người học thắc mắc: \"" + query.trim() + "\"\n\n" +
+                    "Hãy phân tích chi tiết, dễ hiểu bằng tiếng Việt:\n" +
+                    "1. Ý nghĩa chính xác trong ngữ cảnh trên.\n" +
+                    "2. Cấu trúc ngữ pháp hoặc từ loại liên quan.\n" +
+                    "3. 2 ví dụ đặt câu ứng dụng thực tế theo chuẩn CEFR.";
+        } else {
+            prompt = "Bạn là Cố vấn Học thuật Tiếng Anh (Academic English Tutor & Advisor) thông minh và chu đáo.\n" +
+                    "Người học vừa nhắn: \"" + query.trim() + "\"\n\n" +
+                    "Hãy phản hồi một cách tự nhiên, thông minh, đúng trọng tâm bằng tiếng Việt (hoặc tiếng Anh nếu người học hỏi bằng tiếng Anh):\n" +
+                    "- Nếu người học chào hỏi (ví dụ: 'alo', 'chào bạn', 'hi'), hãy chào lại thân thiện, tự nhiên và hướng dẫn ngắn gọn các cách bạn có thể hỗ trợ (sửa lỗi ngữ pháp, nâng cấp từ vựng C1/C2, viết bài luận mẫu, giải thích thành ngữ, luyện viết IELTS/TOEFL...).\n" +
+                    "- Nếu người học yêu cầu viết bài hoặc đồng ý viết (ví dụ: 'viết đi', 'ok', 'viết cho tôi một đoạn...'), hãy viết ngay một đoạn văn tiếng Anh học thuật mẫu mực (CEFR C1 / IELTS 7.5+), kèm bản dịch tiếng Việt và phân tích các cụm từ vựng/cấu trúc đắt giá.\n" +
+                    "- Nếu người học đặt câu hỏi hoặc gửi văn bản, hãy phân tích chi tiết, chỉ ra lỗi ngữ pháp và đưa ra giải pháp cải thiện tối ưu.";
+        }
 
         String aiResult = callGemini(prompt);
         if (aiResult != null && !aiResult.trim().isEmpty()) {
@@ -128,11 +138,15 @@ public class GeminiService {
         }
 
         // Smart linguistic fallback if Google Gemini experiences temporary server 503
-        return "✨ [Phân Tích Ngữ Nghĩa & Ngữ Pháp]:\n" +
-                "• Thuật ngữ/Từ vựng: \"" + query + "\"\n" +
-                "• Ngữ cảnh trong bài: " + (passageContext != null && passageContext.length() > 100 ? passageContext.substring(0, 95) + "..." : passageContext) + "\n" +
-                "• Chức năng: Đóng vai trò thành phần ngữ pháp trọng tâm trong câu, biểu thị hành động hoặc khái niệm chủ đạo của văn bản.\n" +
-                "• Ví dụ ứng dụng: Practice using \"" + query + "\" in your daily conversations and writing.";
+        if (passageContext != null && !passageContext.trim().isEmpty()) {
+            return "✨ [Phân Tích Ngữ Nghĩa & Ngữ Pháp]:\n" +
+                    "• Thuật ngữ/Từ vựng: \"" + query + "\"\n" +
+                    "• Chức năng: Đóng vai trò thành phần ngữ pháp trọng tâm trong câu.\n" +
+                    "• Ví dụ ứng dụng: Practice using \"" + query + "\" in your daily academic studies.";
+        } else {
+            return "Xin chào! Tôi đã nhận được yêu cầu của bạn về \"" + query + "\". " +
+                    "Tôi có thể hỗ trợ bạn sửa lỗi ngữ pháp, nâng cấp từ vựng lên chuẩn C1/C2, hoặc viết bài luận học thuật mẫu. Bạn hãy chia sẻ cụ thể nội dung cần luyện tập nhé!";
+        }
     }
 
     /**

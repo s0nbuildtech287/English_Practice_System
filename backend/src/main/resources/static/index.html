@@ -4448,7 +4448,7 @@
       input.focus();
     }
 
-    function sendAiMessage() {
+    async function sendAiMessage() {
       const input = document.getElementById('aiUserInput');
       const text = input.value.trim();
       if (!text) return;
@@ -4456,30 +4456,57 @@
       const feed = document.getElementById('aiChatFeed');
       feed.innerHTML += `<div class="chat-msg user">${escapeHtml(text)}</div>`;
       input.value = '';
+
+      // Create loading indicator
+      const loadingId = 'ai-msg-' + Date.now();
+      feed.innerHTML += `<div class="chat-msg bot" id="${loadingId}" style="display: flex; align-items: center; gap: 0.5rem; color: #94A3B8;">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #818CF8; animation: pulseGlow 1s infinite alternate;"></span>
+        <span>Cố vấn AI đang suy nghĩ câu trả lời...</span>
+      </div>`;
       feed.scrollTop = feed.scrollHeight;
 
-      // Academic Socratic Evaluation Engine
-      setTimeout(() => {
-        let response = generateAcademicAdvisorResponse(text);
-        feed.innerHTML += `<div class="chat-msg bot">${response}</div>`;
-        feed.scrollTop = feed.scrollHeight;
-      }, 600);
+      try {
+        const res = await fetch('/api/ai/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text, context: '' })
+        });
+        const data = await res.json();
+        const msgEl = document.getElementById(loadingId);
+        if (msgEl) {
+          if (data && data.success && data.answer) {
+            msgEl.style.display = 'block';
+            msgEl.innerHTML = formatAiResponse(data.answer);
+          } else {
+            msgEl.style.display = 'block';
+            msgEl.innerHTML = formatAiResponse(data.answer || 'Xin lỗi, trợ lý AI đang bận hoặc quá tải. Vui lòng thử lại sau giây lát.');
+          }
+        }
+      } catch (err) {
+        console.error('AI call error:', err);
+        const msgEl = document.getElementById(loadingId);
+        if (msgEl) {
+          msgEl.style.display = 'block';
+          msgEl.innerHTML = 'Không thể kết nối đến máy chủ AI. Vui lòng kiểm tra lại đường truyền mạng.';
+        }
+      }
+      feed.scrollTop = feed.scrollHeight;
     }
 
-    function generateAcademicAdvisorResponse(input) {
-      const lower = input.toLowerCase();
-      if (lower.includes('upgrade') || lower.includes('nâng cấp')) {
-        return `<strong>[Phân tích nâng cấp từ vựng C1/C2 Academic]:</strong><br>
-        • Cụm từ thông thường: <em>"important / very good / big problem"</em><br>
-        • Chuyển đổi học thuật Oxford: <em>"paramount / highly efficacious / pressing impediment"</em><br>
-        • Ví dụ cấu trúc nâng cấp: <em>"It is paramount that policymakers address this pressing impediment with empirical rigor."</em>`;
-      } else if (lower.includes('grammar') || lower.includes('ngữ pháp')) {
-        return `<strong>[Kiểm tra cú pháp & Ngữ pháp học thuật]:</strong><br>
-        Văn bản của bạn đã được kiểm tra theo chuẩn ngữ pháp học thuật CEFR C1. Đảm bảo sự hòa hợp giữa chủ ngữ và động từ (Subject-Verb Agreement), và ưu tiên dùng câu bị động khách quan (Passive Voice) khi thảo luận các luận điểm khoa học.`;
-      } else {
-        return `<strong>[Phản hồi từ Cố vấn Học thuật]:</strong><br>
-        Cảm ơn câu hỏi của bạn về <em>"${escapeHtml(input)}"</em>. Để diễn đạt ý tưởng này một cách thuyết phục nhất trong văn phong học thuật, bạn nên chia luận điểm thành 2 phần: Nguyên nhân trực tiếp (Direct Catalyst) và Hệ quả dài hạn (Long-term Ramifications). Bạn có muốn tôi viết một đoạn văn mẫu cho chủ đề này không?`;
-      }
+    function formatAiResponse(raw) {
+      if (!raw) return '';
+      let text = escapeHtml(raw);
+      // Bold **text**
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Italic *text*
+      text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      // Headers ### Title
+      text = text.replace(/###\s+(.*?)(?=\n|$)/g, '<h4 style="color:#93C5FD;margin:0.5rem 0 0.3rem;">$1</h4>');
+      // Blockquotes > text
+      text = text.replace(/^&gt;\s+(.*?)(?=\n|$)/gm, '<blockquote style="border-left: 3px solid #818CF8; padding-left: 0.8rem; margin: 0.5rem 0; color: #E2E8F0; background: rgba(99,102,241,0.08); padding: 0.4rem 0.8rem; border-radius: 4px;">$1</blockquote>');
+      // Newlines
+      text = text.replace(/\n/g, '<br>');
+      return text;
     }
 
     function escapeHtml(str) {
