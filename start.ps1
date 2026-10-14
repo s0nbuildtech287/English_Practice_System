@@ -14,7 +14,7 @@ if (-not $backendCheck) {
     Write-Host "Backend is already running on port 8080." -ForegroundColor Green
 }
 
-# 2. Start Web Client
-Write-Host "Starting Flutter Web App on port 4000..." -ForegroundColor Yellow
-Start-Process "http://localhost:4000"
-python -m http.server 4000 --directory "$PSScriptRoot\app\build\web"
+# 2. Open Academic Web Portal
+Write-Host "Opening Academic Web Portal at http://localhost:8080..." -ForegroundColor Cyan
+Start-Process "http://localhost:8080"
+Write-Host "Done! Web portal is live at http://localhost:8080" -ForegroundColor Green
