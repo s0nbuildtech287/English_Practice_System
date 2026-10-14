@@ -948,7 +948,7 @@
       background: var(--oxford-blue);
     }
 
-    /* TOAST NOTIFICATION */
+        /* TOAST NOTIFICATION */
     #academicToast {
       position: fixed;
       bottom: 80px;
@@ -960,145 +960,531 @@
       border-radius: var(--radius-sm);
       font-size: 0.88rem;
       color: var(--text-main);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
     /* ======================================================== */
-    /* ONBOARDING WIZARD V2 - REDESIGNED */
+    /* ONBOARDING WIZARD - MODERN CLEAN MINIMALIST (NO ICONS)   */
     /* ======================================================== */
     #onboardingPortal3D {
       position: fixed;
       inset: 0;
       z-index: 99999;
-      background: linear-gradient(135deg, #0f0c29 0%, #1a0a3e 30%, #0d1b4b 65%, #0a0a2e 100%);
+      background: #090B10;
+      background: radial-gradient(circle at 50% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+                  linear-gradient(135deg, #090B10 0%, #0D1322 45%, #05070D 100%);
       display: none;
       flex-direction: column;
       align-items: center;
       overflow-y: auto;
       overflow-x: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
-    #onboardingPortal3D.active { display: flex; }
+    #onboardingPortal3D.active {
+      display: flex;
+      opacity: 1;
+    }
 
     .ob-orb {
-      position: fixed; border-radius: 50%;
-      pointer-events: none; filter: blur(90px); z-index: 0;
-      animation: floatOrb 9s ease-in-out infinite;
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(100px);
+      z-index: 0;
+      animation: floatOrb 10s ease-in-out infinite;
     }
-    .ob-orb-1 { width: 540px; height: 540px; background: radial-gradient(circle, rgba(99,102,241,0.55) 0%, transparent 70%); top: -12%; left: -8%; }
-    .ob-orb-2 { width: 460px; height: 460px; background: radial-gradient(circle, rgba(236,72,153,0.45) 0%, transparent 70%); bottom: -8%; right: -6%; animation-direction: reverse; animation-duration: 11s; }
-    .ob-orb-3 { width: 310px; height: 310px; background: radial-gradient(circle, rgba(16,185,129,0.35) 0%, transparent 70%); top: 45%; left: 62%; animation-duration: 13s; animation-delay: 2s; }
+    .ob-orb-1 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%);
+      top: -10%;
+      left: -6%;
+    }
+    .ob-orb-2 {
+      width: 440px;
+      height: 440px;
+      background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 70%);
+      bottom: -6%;
+      right: -4%;
+      animation-direction: reverse;
+      animation-duration: 12s;
+    }
 
     @keyframes floatOrb {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      33%  { transform: translate(28px, -18px) scale(1.06); }
-      66%  { transform: translate(-16px, 14px) scale(0.96); }
+      50%      { transform: translate(20px, -20px) scale(1.05); }
     }
 
     #canvas3d {
-      position: fixed; inset: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none; z-index: 1;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
     }
 
     .ob-brand-bar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 20;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(8, 5, 22, 0.75);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(9, 11, 16, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .ob-brand-name { font-size: 1.05rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
-    .ob-brand-name span { color: #818CF8; }
+    .ob-brand-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #F8FAFC;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ob-brand-name span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #818CF8;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
     .ob-skip-btn {
-      font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.5);
-      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
-      padding: 0.38rem 0.9rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0.45rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .ob-skip-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+    .ob-skip-btn:hover {
+      color: #FFFFFF;
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.25);
+    }
 
     .ob-wizard {
-      position: relative; z-index: 10; width: 100%; max-width: 980px;
-      margin: 0 auto; padding: 5.5rem 1.5rem 4rem;
-      display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; justify-content: center;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 6.5rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      justify-content: center;
     }
 
-    .ob-step { display: none; flex-direction: column; align-items: center; width: 100%; animation: stepFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
-    .ob-step.active { display: flex; }
+    .ob-step {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .ob-step.active {
+      display: flex;
+      animation: stepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
     @keyframes stepFadeIn {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .ob-progress { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 2.25rem; }
-    .ob-prog-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.35s ease; }
-    .ob-prog-dot.done  { background: #818CF8; box-shadow: 0 0 10px rgba(129,140,248,0.8); }
-    .ob-prog-dot.active { width: 28px; border-radius: 5px; background: linear-gradient(90deg, #818CF8, #C084FC); box-shadow: 0 0 14px rgba(129,140,248,0.7); }
-    .ob-prog-line { width: 38px; height: 1px; background: rgba(255,255,255,0.14); }
+    .ob-progress {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .ob-prog-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      transition: all 0.3s ease;
+    }
+    .ob-prog-dot.done {
+      background: #818CF8;
+      box-shadow: 0 0 10px rgba(129,140,248,0.7);
+    }
+    .ob-prog-dot.active {
+      width: 26px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #818CF8, #A78BFA);
+      box-shadow: 0 0 14px rgba(129,140,248,0.6);
+    }
+    .ob-prog-line {
+      width: 32px;
+      height: 1px;
+      background: rgba(255,255,255,0.12);
+    }
 
-    .ob-step-label { font-size: 0.76rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #818CF8; margin-bottom: 0.7rem; text-align: center; }
-    .ob-step-title { font-size: 2.2rem; font-weight: 900; color: #FFFFFF; text-align: center; line-height: 1.2; margin-bottom: 0.6rem; letter-spacing: -0.03em; }
-    .ob-step-sub { font-size: 0.98rem; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 2.25rem; line-height: 1.6; max-width: 520px; }
+    .ob-step-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #818CF8;
+      margin-bottom: 0.65rem;
+      text-align: center;
+    }
+    .ob-step-title {
+      font-size: 2.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      text-align: center;
+      line-height: 1.25;
+      margin-bottom: 0.65rem;
+      letter-spacing: -0.025em;
+    }
+    .ob-step-sub {
+      font-size: 0.95rem;
+      color: #94A3B8;
+      text-align: center;
+      margin-bottom: 2.25rem;
+      line-height: 1.6;
+      max-width: 560px;
+    }
 
-    .ob-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; width: 100%; margin-bottom: 2.5rem; }
-    .ob-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    /* Grid and Cards - No Icons, High-End Minimalist */
+    .ob-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.15rem;
+      width: 100%;
+      margin-bottom: 2.5rem;
+    }
+    .ob-grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
 
     .ob-card {
-      position: relative; padding: 1.4rem 1.25rem;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1.5px solid rgba(255, 255, 255, 0.18);
-      border-radius: 16px; cursor: pointer;
-      display: flex; flex-direction: column; gap: 0.55rem;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      padding: 1.4rem 1.35rem;
+      background: rgba(18, 24, 38, 0.72);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
-    .ob-card:hover { background: rgba(255,255,255,0.12); border-color: rgba(129,140,248,0.65); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(129,140,248,0.35); }
-    .ob-card.selected { background: rgba(99,102,241,0.22); border-color: #818CF8; transform: translateY(-5px); box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 35px rgba(129,140,248,0.35), 0 0 0 1px #818CF8; }
-    .ob-card-icon { font-size: 2rem; line-height: 1; }
-    .ob-card-title { font-size: 1rem; font-weight: 700; color: #F8FAFC; line-height: 1.3; }
-    .ob-card-desc  { font-size: 0.8rem; color: rgba(255,255,255,0.52); line-height: 1.5; }
-    .ob-card-badge { margin-top: 0.4rem; display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 4px; width: fit-content; }
-    .ob-check { position: absolute; top: 11px; right: 11px; width: 21px; height: 21px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: transparent; transition: all 0.2s ease; }
-    .ob-card.selected .ob-check { background: #818CF8; border-color: #818CF8; color: #fff; box-shadow: 0 0 10px rgba(129,140,248,0.7); }
+    .ob-card:hover {
+      background: rgba(28, 37, 56, 0.85);
+      border-color: rgba(129, 140, 248, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+    .ob-card.selected {
+      background: rgba(30, 27, 75, 0.82);
+      border-color: #818CF8;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.32), inset 0 0 0 1px #818CF8;
+    }
+    .ob-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.15rem;
+    }
+    .ob-card-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    .ob-card-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .ob-card.selected .ob-card-radio {
+      border-color: #818CF8;
+      background: #818CF8;
+      box-shadow: 0 0 8px rgba(129, 140, 248, 0.7);
+    }
+    .ob-card.selected .ob-card-radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FFFFFF;
+    }
+    .ob-card-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #F8FAFC;
+      line-height: 1.35;
+    }
+    .ob-card-desc {
+      font-size: 0.84rem;
+      color: #94A3B8;
+      line-height: 1.55;
+    }
 
-    .ob-levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; width: 100%; margin-bottom: 1.5rem; }
-    .ob-level-pill { padding: 1rem; text-align: center; border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); cursor: pointer; transition: all 0.2s ease; color: rgba(255,255,255,0.65); font-weight: 700; font-size: 1.05rem; }
-    .ob-level-pill small { display: block; font-size: 0.7rem; font-weight: 500; opacity: 0.7; margin-top: 0.2rem; }
-    .ob-level-pill:hover { background: rgba(255,255,255,0.11); color: #fff; }
-    .ob-level-pill.selected { border-color: #818CF8; background: rgba(99,102,241,0.22); color: #fff; box-shadow: 0 0 22px rgba(99,102,241,0.35); }
+    /* Step 3: Levels and Daily Time */
+    .ob-section-label {
+      width: 100%;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+      margin-top: 1rem;
+    }
+    .ob-levels {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      width: 100%;
+      margin-bottom: 1.25rem;
+    }
+    .ob-level-pill {
+      padding: 1.1rem 0.75rem;
+      text-align: center;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      background: rgba(18, 24, 38, 0.7);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #94A3B8;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .ob-level-pill small {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      opacity: 0.75;
+      margin-top: 0.25rem;
+      letter-spacing: 0.02em;
+    }
+    .ob-level-pill:hover {
+      background: rgba(28, 37, 56, 0.85);
+      color: #FFFFFF;
+      border-color: rgba(129, 140, 248, 0.4);
+    }
+    .ob-level-pill.selected {
+      border-color: #818CF8;
+      background: rgba(30, 27, 75, 0.85);
+      color: #FFFFFF;
+      box-shadow: 0 0 20px rgba(99,102,241,0.35), inset 0 0 0 1px #818CF8;
+    }
 
-    .ob-times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; width: 100%; margin-bottom: 2.5rem; }
-    .ob-time-pill { padding: 1rem; text-align: center; border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); cursor: pointer; transition: all 0.2s ease; color: rgba(255,255,255,0.65); font-weight: 700; }
-    .ob-time-pill small { display: block; font-size: 0.72rem; font-weight: 500; opacity: 0.7; margin-top: 0.2rem; }
-    .ob-time-pill:hover { background: rgba(255,255,255,0.11); color: #fff; }
-    .ob-time-pill.selected { border-color: #34D399; background: rgba(52,211,153,0.18); color: #fff; box-shadow: 0 0 22px rgba(52,211,153,0.3); }
+    .ob-times {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      width: 100%;
+      margin-bottom: 2.25rem;
+    }
+    .ob-time-pill {
+      padding: 1.1rem 0.75rem;
+      text-align: center;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      background: rgba(18, 24, 38, 0.7);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #94A3B8;
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+    .ob-time-pill small {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      opacity: 0.75;
+      margin-top: 0.25rem;
+    }
+    .ob-time-pill:hover {
+      background: rgba(28, 37, 56, 0.85);
+      color: #FFFFFF;
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+    .ob-time-pill.selected {
+      border-color: #34D399;
+      background: rgba(6, 78, 59, 0.35);
+      color: #FFFFFF;
+      box-shadow: 0 0 20px rgba(52,211,153,0.3), inset 0 0 0 1px #34D399;
+    }
 
-    .ob-section-label { width: 100%; font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.7rem; margin-top: 1.5rem; }
+    /* Navigation Buttons */
+    .ob-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.85rem;
+      width: 100%;
+    }
+    .ob-btn-next {
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      color: #FFFFFF;
+      font-size: 0.98rem;
+      font-weight: 700;
+      padding: 0.9rem 2.6rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.22s ease;
+      box-shadow: 0 6px 20px rgba(99,102,241,0.45);
+    }
+    .ob-btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(99,102,241,0.6);
+    }
+    .ob-btn-back {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.9rem 1.6rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ob-btn-back:hover {
+      background: rgba(255,255,255,0.12);
+      color: #FFFFFF;
+    }
+    .ob-btn-launch {
+      background: linear-gradient(135deg, #059669 0%, #0284C7 50%, #6366F1 100%);
+      color: #FFFFFF;
+      font-size: 1.02rem;
+      font-weight: 800;
+      padding: 1rem 3rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 25px rgba(5,150,105,0.4);
+    }
+    .ob-btn-launch:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(5,150,105,0.55);
+    }
 
-    .ob-nav { display: flex; justify-content: center; gap: 0.85rem; width: 100%; }
-    .ob-btn-next { background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: #fff; font-size: 1rem; font-weight: 700; padding: 0.95rem 2.5rem; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.55rem; transition: all 0.25s ease; box-shadow: 0 8px 28px rgba(99,102,241,0.55); }
-    .ob-btn-next:hover { transform: translateY(-3px); box-shadow: 0 15px 38px rgba(99,102,241,0.7); }
-    .ob-btn-back { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 600; padding: 0.95rem 1.6rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); cursor: pointer; transition: all 0.2s ease; }
-    .ob-btn-back:hover { background: rgba(255,255,255,0.13); color: #fff; }
-    .ob-btn-launch { background: linear-gradient(135deg, #059669 0%, #0284C7 50%, #7C3AED 100%); color: #fff; font-size: 1.05rem; font-weight: 800; padding: 1.05rem 3rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.22); cursor: pointer; display: flex; align-items: center; gap: 0.65rem; transition: all 0.25s ease; box-shadow: 0 10px 30px rgba(5,150,105,0.4); animation: pulseLaunch 2.8s ease-in-out infinite; }
-    @keyframes pulseLaunch { 0%, 100% { box-shadow: 0 10px 30px rgba(5,150,105,0.4); } 50% { box-shadow: 0 12px 35px rgba(124,58,237,0.55); } }
-    .ob-btn-launch:hover { transform: translateY(-4px) scale(1.02); }
-
-    .ob-welcome-hero { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.4rem; padding: 1.5rem 0 2rem; }
-    .ob-logo-ring { width: 88px; height: 88px; border-radius: 22px; background: linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; box-shadow: 0 0 40px rgba(99,102,241,0.6); animation: logoPulse 3s ease-in-out infinite; }
-    @keyframes logoPulse { 0%, 100% { box-shadow: 0 0 40px rgba(99,102,241,0.6); transform: scale(1); } 50% { box-shadow: 0 0 70px rgba(139,92,246,0.85); transform: scale(1.05); } }
-    .ob-welcome-title { font-size: 2.85rem; font-weight: 900; line-height: 1.15; background: linear-gradient(135deg, #fff 15%, #93C5FD 55%, #C084FC 90%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.04em; }
-    .ob-welcome-sub { font-size: 1.05rem; color: rgba(255,255,255,0.6); line-height: 1.7; max-width: 510px; }
-    .ob-feature-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
-    .ob-feat-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.38rem 0.85rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
-    .ob-btn-start { background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: #fff; font-size: 1.1rem; font-weight: 800; padding: 1.05rem 3.5rem; border-radius: 14px; border: none; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 10px 35px rgba(99,102,241,0.6); animation: pulseLaunch 3s ease-in-out infinite; }
-    .ob-btn-start:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 18px 48px rgba(99,102,241,0.75); }
+    /* Step 0: Welcome Screen */
+    .ob-welcome-hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.35rem;
+      padding: 1.5rem 0 2rem;
+    }
+    .ob-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #A5B4FC;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      padding: 0.35rem 0.95rem;
+      border-radius: 999px;
+    }
+    .ob-welcome-title {
+      font-size: 2.85rem;
+      font-weight: 900;
+      line-height: 1.18;
+      background: linear-gradient(135deg, #FFFFFF 20%, #93C5FD 55%, #C084FC 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.035em;
+      max-width: 720px;
+    }
+    .ob-welcome-sub {
+      font-size: 1.02rem;
+      color: #94A3B8;
+      line-height: 1.7;
+      max-width: 540px;
+    }
+    .ob-feature-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin: 0.3rem 0 1rem;
+    }
+    .ob-feat-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: #E2E8F0;
+      letter-spacing: 0.02em;
+    }
+    .ob-btn-start {
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      color: #FFFFFF;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 1rem 3.2rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+    }
+    .ob-btn-start:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 40px rgba(99,102,241,0.65);
+    }
 
     @media (max-width: 768px) {
       .ob-welcome-title { font-size: 2rem; }
       .ob-step-title { font-size: 1.6rem; }
-      .ob-grid-3 { grid-template-columns: 1fr; }
+      .ob-grid, .ob-grid-3 { grid-template-columns: 1fr; }
       .ob-levels { grid-template-columns: repeat(2, 1fr); }
       .ob-times { grid-template-columns: 1fr; }
     }
   </style>
+</style>
 </head>
 <body>
 
@@ -1106,14 +1492,18 @@
   <!-- ============================================================ -->
   <!-- ONBOARDING WIZARD V2 - REDESIGNED FOR VISIBILITY & UX -->
   <!-- ============================================================ -->
+    <!-- ============================================================ -->
+  <!-- ONBOARDING WIZARD - CLEAN & MODERN DESIGN (NO ICONS)         -->
+  <!-- ============================================================ -->
   <div id="onboardingPortal3D">
     <canvas id="canvas3d"></canvas>
     <div class="ob-orb ob-orb-1"></div>
     <div class="ob-orb ob-orb-2"></div>
-    <div class="ob-orb ob-orb-3"></div>
 
     <div class="ob-brand-bar">
-      <div class="ob-brand-name">Practice English <span>&#x2756; AI Learning</span></div>
+      <div class="ob-brand-name">
+        Practice English <span>CEFR Academic</span>
+      </div>
       <button class="ob-skip-btn" onclick="closeOnboardingModal()">B&#x1ECF; qua v&#xE0; v&#xE0;o h&#x1ECD;c &#x2192;</button>
     </div>
 
@@ -1122,20 +1512,20 @@
       <!-- STEP 0: WELCOME -->
       <div class="ob-step active" id="ob-step-0">
         <div class="ob-welcome-hero">
-          <div class="ob-logo-ring">&#x1F4D6;</div>
+          <div class="ob-hero-badge">CEFR ACADEMIC SUITE &bull; AI PERSONALIZATION</div>
           <h1 class="ob-welcome-title">&#x0110;&#x1ECB;nh H&#xEC;nh L&#x1ED9; Tr&#xEC;nh<br>Ti&#x1EBF;ng Anh C&#x1EE7;a Ri&#xEA;ng B&#x1EA1;n</h1>
-          <p class="ob-welcome-sub">Tr&#x1EA3; l&#x1EDD;i 3 c&#xE2;u h&#x1ECF;i nhanh. H&#x1EC7; th&#x1ED1;ng s&#x1EBD; t&#x1EF1; &#x111;&#x1ED9;ng c&#xE1; nh&#xE2;n h&#xF3;a b&#xE0;i &#x111;&#x1ECD;c, audio b&#x1EA3;n x&#x1EE9; v&#xE0; th&#x1EBB; &#xF4;n t&#x1EAD;p th&#xF4;ng minh cho &#x111;&#xFA;ng tr&#xEC;nh &#x111;&#x1ED9; v&#xE0; m&#x1EE5;c ti&#xEA;u c&#x1EE7;a b&#x1EA1;n.</p>
+          <p class="ob-welcome-sub">H&#x1EC7; th&#x1ED1;ng t&#x1EF1; &#x111;&#x1ED9;ng t&#x1ED1;i &#x01B0;u h&#xF3;a b&#xE0;i &#x111;&#x1ECD;c, audio b&#x1EA3;n x&#x1EE9; v&#xE0; b&#x1ED9; th&#x1EBB; t&#x1EEB; v&#x1EF1;ng th&#xF4;ng minh theo &#x111;&#xFA;ng tr&#xEC;nh &#x111;&#x1ED9; v&#xE0; m&#x1EE5;c ti&#xEA;u c&#x1EE7;a b&#x1EA1;n.</p>
           <div class="ob-feature-pills">
-            <span class="ob-feat-pill">&#x1F393; Chu&#x1EA9;n CEFR A1 &ndash; C2</span>
-            <span class="ob-feat-pill">&#x1F3A7; Audio B&#x1EA3;n X&#x1EE9; Chu&#x1EA9;n</span>
-            <span class="ob-feat-pill">&#x2728; AI Ph&#xE2;n T&#xED;ch C&#xE1; Nh&#xE2;n</span>
-            <span class="ob-feat-pill">&#x1F4CA; L&#x1ED9; Tr&#xEC;nh Th&#xF4;ng Minh</span>
+            <span class="ob-feat-pill">Chu&#x1EA9;n CEFR A1 &ndash; C2</span>
+            <span class="ob-feat-pill">Audio B&#x1EA3;n X&#x1EE9; Chu&#x1EA9;n</span>
+            <span class="ob-feat-pill">AI Ph&#xE2;n T&#xED;ch C&#xE1; Nh&#xE2;n</span>
+            <span class="ob-feat-pill">L&#x1ED9; Tr&#xEC;nh Th&#xF4;ng Minh</span>
           </div>
-          <button class="ob-btn-start" onclick="obNextStep(0)">B&#x1EAF;t &#x0110;&#x1EA7;u C&#xE0;i &#x0110;&#x1EB7;t L&#x1ED9; Tr&#xEC;nh &#x2756;</button>
+          <button class="ob-btn-start" onclick="obNextStep(0)">B&#x1EAF;t &#x0110;&#x1EA7;u Thi&#x1EBF;t L&#x1EAD;p L&#x1ED9; Tr&#xEC;nh &#x2192;</button>
         </div>
       </div>
 
-      <!-- STEP 1: MUC TIEU -->
+      <!-- STEP 1: MUC TIEU (GOAL) -->
       <div class="ob-step" id="ob-step-1">
         <div class="ob-progress">
           <div class="ob-prog-dot active"></div>
@@ -1146,35 +1536,39 @@
         </div>
         <div class="ob-step-label">B&#x01B0;&#x1EDB;c 1 / 3 &mdash; M&#x1EE5;c Ti&#xEA;u H&#x1ECD;c T&#x1EAD;p</div>
         <h2 class="ob-step-title">B&#x1EA1;n mu&#x1ED1;n &#x111;&#x1EA1;t &#x111;&#x01B0;&#x1EE3;c g&#xEC;<br>khi h&#x1ECD;c ti&#x1EBF;ng Anh?</h2>
-        <p class="ob-step-sub">Ch&#x1ECD;n m&#x1EE5;c ti&#xEA;u ch&#xED;nh. H&#x1EC7; th&#x1ED1;ng s&#x1EBD; t&#x1ED1;i &#x01B0;u h&#xF3;a to&#xE0;n b&#x1ED9; n&#x1ED9;i dung ph&#xF9; h&#x1EE3;p v&#x1EDB;i &#x111;&#xED;ch &#x111;&#x1EBF;n c&#x1EE7;a b&#x1EA1;n.</p>
+        <p class="ob-step-sub">Ch&#x1ECD;n m&#x1EE5;c ti&#xEA;u ch&#xED;nh &#x111;&#x1EC3; h&#x1EC7; th&#x1ED1;ng t&#x1ED1;i &#x01B0;u h&#xF3;a n&#x1ED9;i dung b&#xE0;i h&#x1ECD;c ph&#xF9; h&#x1EE3;p nh&#x1EA5;t.</p>
         <div class="ob-grid" id="ob-goal-grid">
           <div class="ob-card selected" data-goal="ielts" onclick="obSelectCard('goal', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x1F393;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(99,102,241,0.2);color:#A5B4FC;border:1px solid rgba(99,102,241,0.35);">IELTS 7.0+ / TOEFL</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">Luy&#x1EC7;n Thi Qu&#x1ED1;c T&#x1EBF;</div>
             <div class="ob-card-desc">Chinh ph&#x1EE5;c IELTS 7.0+, TOEFL iBT v&#x1EDB;i k&#x1EF9; n&#x0103;ng &#x111;&#x1ECD;c hi&#x1EC3;u h&#x1ECD;c thu&#x1EAD;t chuy&#xEA;n s&#xE2;u.</div>
-            <span class="ob-card-badge" style="background:rgba(99,102,241,0.22);color:#A5B4FC;">IELTS 7.0+ / TOEFL</span>
           </div>
           <div class="ob-card" data-goal="career" onclick="obSelectCard('goal', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x1F4BC;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(14,165,233,0.2);color:#38BDF8;border:1px solid rgba(14,165,233,0.35);">Global Career</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">S&#x1EF1; Nghi&#x1EC7;p To&#xE0;n C&#x1EA7;u</div>
-            <div class="ob-card-desc">T&#x1EF1; tin l&#xE0;m vi&#x1EC7;c v&#x1EDB;i &#x111;&#x1ED1;i t&#xE1;c qu&#x1ED1;c t&#x1EBF;, email chuy&#xEA;n nghi&#x1EC7;p, thuy&#x1EBF;t tr&#xEC;nh d&#x1EF1; &#xE1;n c&#xF4;ng ngh&#x1EC7;.</div>
-            <span class="ob-card-badge" style="background:rgba(14,165,233,0.22);color:#38BDF8;">Global Career &amp; Tech</span>
+            <div class="ob-card-desc">T&#x1EF1; tin l&#xE0;m vi&#x1EC7;c v&#x1EDB;i &#x111;&#x1ED1;i t&#xE1;c qu&#x1ED1;c t&#x1EBF;, vi&#x1EBF;t email chuy&#xEA;n nghi&#x1EC7;p, thuy&#x1EBF;t tr&#xEC;nh d&#x1EF1; &#xE1;n c&#xF4;ng ngh&#x1EC7;.</div>
           </div>
           <div class="ob-card" data-goal="knowledge" onclick="obSelectCard('goal', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x1F9E0;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(245,158,11,0.2);color:#FCD34D;border:1px solid rgba(245,158,11,0.35);">Academic Research</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">N&#xE2;ng T&#x1EA7;m Tri Th&#x1EE9;c</div>
             <div class="ob-card-desc">&#x110;&#x1ECD;c b&#xE1;o khoa h&#x1ECD;c, tri&#x1EBF;t h&#x1ECD;c, th&#x01B0;&#x1EF3;ng th&#x1EE9;c podcast b&#x1EA3;n x&#x1EE9; kh&#xF4;ng c&#x1EA7;n ph&#x1EE5; &#x111;&#x1EC1;.</div>
-            <span class="ob-card-badge" style="background:rgba(245,158,11,0.22);color:#FCD34D;">Academic Research</span>
           </div>
           <div class="ob-card" data-goal="fluent" onclick="obSelectCard('goal', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x1F5E3;&#xFE0F;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(16,185,129,0.2);color:#34D399;border:1px solid rgba(16,185,129,0.35);">Fluency &amp; Speaking</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">Giao Ti&#x1EBF;p L&#x01B0;u Lo&#xE1;t</div>
-            <div class="ob-card-desc">Ph&#x1EA3;n x&#x1EA1; t&#x1EF1; nhi&#xEA;n, ph&#xE1;t &#xE2;m chu&#x1EA9;n IPA, l&#xE0;m ch&#x1EE7; 4 k&#x1EF9; n&#x0103;ng trong cu&#x1ED9;c s&#x1ED1;ng v&#xE0; c&#xF4;ng vi&#x1EC7;c.</div>
-            <span class="ob-card-badge" style="background:rgba(16,185,129,0.22);color:#34D399;">Fluency &amp; Speaking</span>
+            <div class="ob-card-desc">Ph&#x1EA3;n x&#x1EA1; t&#x1EF1; nhi&#xEA;n, ph&#xE1;t &#xE2;m chu&#x1EA9;n IPA, l&#xE0;m ch&#x1EE7; c&#xE1;c k&#x1EF9; n&#x0103;ng trong cu&#x1ED9;c s&#x1ED1;ng v&#xE0; c&#xF4;ng vi&#x1EC7;c.</div>
           </div>
         </div>
         <div class="ob-nav">
@@ -1182,7 +1576,7 @@
         </div>
       </div>
 
-      <!-- STEP 2: TRINH DO HIEN TAI -->
+      <!-- STEP 2: TRINH DO HIEN TAI (BASELINE) -->
       <div class="ob-step" id="ob-step-2">
         <div class="ob-progress">
           <div class="ob-prog-dot done"></div>
@@ -1192,29 +1586,32 @@
           <div class="ob-prog-dot"></div>
         </div>
         <div class="ob-step-label">B&#x01B0;&#x1EDB;c 2 / 3 &mdash; Tr&#xEC;nh &#x110;&#x1ED9; Hi&#x1EC7;n T&#x1EA1;i</div>
-        <h2 class="ob-step-title">Tr&#xEC;nh &#x111;&#x1ED9; xu&#x1EA5;t ph&#xE1;t &#x111;i&#x1EC3;m<br>hi&#x1EC7;n t&#x1EA1;i c&#x1EE7;a b&#x1EA1;n &#x1EDF; &#x111;&#xE2;u?</h2>
-        <p class="ob-step-sub">&#x0110;&#xE1;nh gi&#xE1; th&#xE0;nh th&#x1EAD;t &#x111;&#x1EC3; h&#x1EC7; th&#x1ED1;ng &#x111;&#x1EC1; xu&#x1EA5;t &#x111;i&#x1EC3;m xu&#x1EA5;t ph&#xE1;t v&#xE0; b&#xE0;i h&#x1ECD;c ph&#xF9; h&#x1EE3;p nh&#x1EA5;t v&#x1EDB;i b&#x1EA1;n.</p>
+        <h2 class="ob-step-title">Tr&#xEC;nh &#x111;&#x1ED9; xu&#x1EA5;t ph&#xE1;t &#x111;i&#x1EC3;m<br>hi&#x1EC7;n t&#x1EA1;i c&#x1EE7;a b&#x1EA1;n?</h2>
+        <p class="ob-step-sub">&#x0110;&#xE1;nh gi&#xE1; ch&#xED;nh x&#xE1;c &#x111;&#x1EC3; h&#x1EC7; th&#x1ED1;ng &#x111;&#x1EC1; xu&#x1EA5;t b&#xE0;i h&#x1ECD;c ph&#xF9; h&#x1EE3;p nh&#x1EA5;t v&#x1EDB;i n&#x103;ng l&#x1EF1;c c&#x1EE7;a b&#x1EA1;n.</p>
         <div class="ob-grid ob-grid-3" id="ob-baseline-grid">
           <div class="ob-card" data-baseline="A1-A2" onclick="obSelectCard('baseline', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x1F331;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(16,185,129,0.2);color:#34D399;border:1px solid rgba(16,185,129,0.35);">CEFR A1 &ndash; A2</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">Kh&#x1EDF;i &#x0110;&#x1EA7;u / M&#x1EA5;t G&#x1ED1;c</div>
-            <div class="ob-card-desc">Bi&#x1EBF;t t&#x1EEB; v&#x1EF1;ng th&#x01B0;&#x1EDD;ng nh&#x1EAD;t c&#x01A1; b&#x1EA3;n, ng&#x1EEF; ph&#xE1;p ch&#x01B0;a v&#x1EEF;ng, nghe ng&#x01B0;&#x1EDD;i b&#x1EA3;n x&#x1EE9; c&#xF2;n ch&#x1EAD;m.</div>
-            <span class="ob-card-badge" style="background:rgba(16,185,129,0.22);color:#34D399;">CEFR A1 &ndash; A2</span>
+            <div class="ob-card-desc">T&#x1EEB; v&#x1EF1;ng c&#x01A1; b&#x1EA3;n, ng&#x1EEF; ph&#xE1;p ch&#x01B0;a v&#x1EEF;ng, c&#x1EA7;n c&#x1EE7;ng c&#x1ED1; n&#x1EC1;n t&#x1EA3;ng v&#xE0; ph&#x1EA3;n x&#x1EA1; nghe.</div>
           </div>
           <div class="ob-card selected" data-baseline="B1-B2" onclick="obSelectCard('baseline', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x26A1;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(56,189,248,0.2);color:#38BDF8;border:1px solid rgba(56,189,248,0.35);">CEFR B1 &ndash; B2</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">Trung C&#x1EA5;p / B&#x1EE9;t Ph&#xE1;</div>
-            <div class="ob-card-desc">&#x110;&#x1ECD;c hi&#x1EC3;u b&#xE1;o c&#x01A1; b&#x1EA3;n, mu&#x1ED1;n t&#x0103;ng t&#x1ED1;c v&#x1ED1;n t&#x1EEB; h&#x1ECD;c thu&#x1EAD;t v&#xE0; nghe ch&#x1EE7; &#x111;&#x1EC1; chuy&#xEA;n m&#xF4;n.</div>
-            <span class="ob-card-badge" style="background:rgba(56,189,248,0.22);color:#38BDF8;">CEFR B1 &ndash; B2</span>
+            <div class="ob-card-desc">&#x110;&#x1ECD;c hi&#x1EC3;u v&#x0103;n b&#x1EA3;n th&#xF4;ng th&#x01B0;&#x1EDD;ng, mu&#x1ED1;n t&#x0103;ng t&#x1ED1;c v&#x1ED1;n t&#x1EEB; h&#x1ECD;c thu&#x1EAD;t v&#xE0; nghe chuy&#xEA;n s&#xE2;u.</div>
           </div>
           <div class="ob-card" data-baseline="C1-C2" onclick="obSelectCard('baseline', this)">
-            <div class="ob-check">&#x2713;</div>
-            <div class="ob-card-icon">&#x1F3C6;</div>
+            <div class="ob-card-top">
+              <span class="ob-card-badge" style="background:rgba(192,132,252,0.2);color:#C084FC;border:1px solid rgba(192,132,252,0.35);">CEFR C1 &ndash; C2</span>
+              <div class="ob-card-radio"></div>
+            </div>
             <div class="ob-card-title">N&#xE2;ng Cao / Chuy&#xEA;n S&#xE2;u</div>
-            <div class="ob-card-desc">&#x110;&#x1ECD;c v&#x0103;n b&#x1EA3;n h&#x1ECD;c thu&#x1EAD;t ph&#x1EE9;c h&#x1EE3;p, mu&#x1ED1;n tinh ch&#x1EC9;nh s&#x1EAF;c th&#xE1;i v&#x0103;n phong v&#xE0; bi&#x1EC3;u &#x111;&#x1EA1;t.</div>
-            <span class="ob-card-badge" style="background:rgba(192,132,252,0.22);color:#C084FC;">CEFR C1 &ndash; C2</span>
+            <div class="ob-card-desc">&#x110;&#x1ECD;c t&#x1ED1;t t&#xE0;i li&#x1EC7;u chuy&#xEA;n ng&#xE0;nh, mu&#x1ED1;n tinh ch&#x1EC9;nh s&#x1EAF;c th&#xE1;i di&#x1EC5;n &#x0111;&#x1EA1;t v&#xE0; bi&#x1EC7;n lu&#x1EAD;n h&#x1ECD;c thu&#x1EAD;t.</div>
           </div>
         </div>
         <div class="ob-nav">
@@ -1223,7 +1620,7 @@
         </div>
       </div>
 
-      <!-- STEP 3: MUC TIEU & CAM KET -->
+      <!-- STEP 3: MUC TIEU CEFR & CAM KET THOI GIAN -->
       <div class="ob-step" id="ob-step-3">
         <div class="ob-progress">
           <div class="ob-prog-dot done"></div>
@@ -1234,26 +1631,26 @@
         </div>
         <div class="ob-step-label">B&#x01B0;&#x1EDB;c 3 / 3 &mdash; &#x0110;&#xED;ch &#x0110;&#x1EBF;n &amp; Cam K&#x1EBF;t</div>
         <h2 class="ob-step-title">B&#x1EA1;n mu&#x1ED1;n &#x111;&#x1EA1;t &#x111;&#x1EBF;n<br>c&#x1EA5;p &#x111;&#x1ED9; n&#xE0;o?</h2>
-        <p class="ob-step-sub">Ch&#x1ECD;n &#x111;&#xED;ch &#x111;&#x1EBF;n CEFR qu&#x1ED1;c t&#x1EBF; v&#xE0; th&#x1EDD;i gian b&#x1EA1;n s&#x1EB5;n s&#xE0;ng d&#xE0;nh ra m&#x1ED7;i ng&#xE0;y &#x111;&#x1EC3; luy&#x1EC7;n t&#x1EAD;p.</p>
+        <p class="ob-step-sub">Ch&#x1ECD;n &#x111;&#xED;ch &#x111;&#x1EBF;n CEFR qu&#x1ED1;c t&#x1EBF; v&#xE0; th&#x1EDD;i gian r&#xE8;n luy&#x1EC7;n m&#x1ED7;i ng&#xE0;y.</p>
 
-        <div class="ob-section-label">&#x1F3AF; C&#x1EA5;p &#x111;&#x1ED9; CEFR m&#x1EE5;c ti&#xEA;u h&#x01B0;&#x1EDB;ng &#x111;&#x1EBF;n:</div>
+        <div class="ob-section-label">M&#x1EE5;c ti&#xEA;u c&#x1EA5;p &#x111;&#x1ED9; CEFR h&#x01B0;&#x1EDB;ng &#x111;&#x1EBF;n:</div>
         <div class="ob-levels" id="ob-target-group">
           <div class="ob-level-pill" data-level="B1" onclick="obSelectLevel(this)">B1<small>Intermediate</small></div>
-          <div class="ob-level-pill" data-level="B2" onclick="obSelectLevel(this)">B2<small>Upper-Int.</small></div>
-          <div class="ob-level-pill selected" data-level="C1" onclick="obSelectLevel(this)">C1<small>Advanced</small></div>
-          <div class="ob-level-pill" data-level="C2" onclick="obSelectLevel(this)">C2<small>Mastery</small></div>
+          <div class="ob-level-pill" data-level="B2" onclick="obSelectLevel(this)">B2<small>Upper-Intermediate</small></div>
+          <div class="ob-level-pill selected" data-level="C1" onclick="obSelectLevel(this)">C1<small>Advanced Academic</small></div>
+          <div class="ob-level-pill" data-level="C2" onclick="obSelectLevel(this)">C2<small>Mastery / Fluency</small></div>
         </div>
 
-        <div class="ob-section-label">&#x23F1; Th&#x1EDD;i gian r&#xE8;n luy&#x1EC7;n cam k&#x1EBF;t m&#x1ED7;i ng&#xE0;y:</div>
+        <div class="ob-section-label">Th&#x1EDD;i gian r&#xE8;n luy&#x1EC7;n m&#x1ED7;i ng&#xE0;y:</div>
         <div class="ob-times" id="ob-time-group">
-          <div class="ob-time-pill" data-time="15" onclick="obSelectTime(this)">15 ph&#xFA;t / ng&#xE0;y<small>B&#x01B0;&#x1EDB;c &#x111;&#x1EA7;u nh&#x1EB9; nh&#xE0;ng</small></div>
-          <div class="ob-time-pill selected" data-time="30" onclick="obSelectTime(this)">30 ph&#xFA;t / ng&#xE0;y<small>Ti&#xEA;u chu&#x1EA9;n hi&#x1EC7;u qu&#x1EA3;</small></div>
+          <div class="ob-time-pill" data-time="15" onclick="obSelectTime(this)">15 ph&#xFA;t / ng&#xE0;y<small>Kh&#x1EDF;i &#x111;&#x1ED9;ng b&#x1EC1;n b&#x1EC9;</small></div>
+          <div class="ob-time-pill selected" data-time="30" onclick="obSelectTime(this)">30 ph&#xFA;t / ng&#xE0;y<small>T&#x1ED1;i &#x01B0;u &amp; hi&#x1EC7;u qu&#x1EA3; nh&#x1EA5;t</small></div>
           <div class="ob-time-pill" data-time="60" onclick="obSelectTime(this)">60 ph&#xFA;t / ng&#xE0;y<small>T&#x0103;ng t&#x1ED1;c t&#x1ED1;i &#x111;a</small></div>
         </div>
 
         <div class="ob-nav">
           <button class="ob-btn-back" onclick="obGoBack(3)">&#x2190; Quay l&#x1EA1;i</button>
-          <button class="ob-btn-launch" onclick="launchPersonalizedJourney()">&#x1F680; K&#xED;ch Ho&#x1EA1;t L&#x1ED9; Tr&#xEC;nh &amp; B&#x1EAF;t &#x0110;&#x1EA7;u</button>
+          <button class="ob-btn-launch" onclick="launchPersonalizedJourney()">K&#xED;ch Ho&#x1EA1;t L&#x1ED9; Tr&#xEC;nh &amp; V&#xE0;o H&#x1ECD;c &#x2192;</button>
         </div>
       </div>
 
@@ -3973,9 +4370,9 @@
     }
 
     // ========================================================
-    // 3D ONBOARDING PORTAL JAVASCRIPT & 3D CANVAS ENGINE
-    // ========================================================
-    // ===== ONBOARDING WIZARD V2 =====
+        // =====================================================
+    // ONBOARDING WIZARD & 3D CANVAS CONTROLLER
+    // =====================================================
     let currentOnboardingState = {
       goal: 'ielts',
       goalText: 'Luyện Thi Quốc Tế (IELTS 7.0+)',
@@ -3999,6 +4396,8 @@
       const prev = document.getElementById('ob-step-' + (currentStep - 1));
       if (cur)  cur.classList.remove('active');
       if (prev) prev.classList.add('active');
+      const portal = document.getElementById('onboardingPortal3D');
+      if (portal) portal.scrollTop = 0;
     }
 
     function obSelectCard(type, element) {
@@ -4028,7 +4427,7 @@
       currentOnboardingState.dailyTime = element.getAttribute('data-time');
     }
 
-    // ===== 3D CANVAS STAR FIELD =====
+    // ===== 3D CANVAS STAR FIELD & ORBIT RINGS =====
     function init3DCanvas() {
       const canvas = document.getElementById('canvas3d');
       if (!canvas) return;
@@ -4042,28 +4441,28 @@
       window.addEventListener('resize', resize);
 
       const COLORS = ['#818CF8','#A78BFA','#C084FC','#38BDF8','#34D399','#F472B6'];
-      const particles = Array.from({length: 90}, () => ({
+      const particles = Array.from({length: 80}, () => ({
         x: (Math.random() - 0.5) * 1800,
         y: (Math.random() - 0.5) * 1400,
         z: Math.random() * 1000,
-        size: Math.random() * 1.6 + 0.5,
-        speed: Math.random() * 0.7 + 0.25,
+        size: Math.random() * 1.5 + 0.5,
+        speed: Math.random() * 0.6 + 0.25,
         color: COLORS[Math.floor(Math.random() * COLORS.length)]
       }));
 
       function animate() {
         ctx.clearRect(0, 0, w, h);
-        const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.4;
+        const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.42;
         const t = Date.now() * 0.001;
 
-        ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * 0.14);
-        ctx.beginPath(); ctx.ellipse(0, 0, R, R * 0.38, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(99,102,241,0.3)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * 0.12);
+        ctx.beginPath(); ctx.ellipse(0, 0, R, R * 0.36, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(99,102,241,0.25)'; ctx.lineWidth = 1.5; ctx.stroke();
         ctx.restore();
 
-        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-t * 0.2);
-        ctx.beginPath(); ctx.ellipse(0, 0, R * 0.72, R * 0.28, 0.5, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(192,132,252,0.22)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-t * 0.18);
+        ctx.beginPath(); ctx.ellipse(0, 0, R * 0.75, R * 0.26, 0.4, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(168,85,247,0.2)'; ctx.lineWidth = 1; ctx.stroke();
         ctx.restore();
 
         for (const p of particles) {
@@ -4071,7 +4470,7 @@
           if (p.z <= 1) { p.z = 1000; p.x = (Math.random()-0.5)*1800; p.y = (Math.random()-0.5)*1400; }
           const k = 380 / p.z;
           const px = p.x * k + w / 2, py = p.y * k + h / 2;
-          const sz = Math.min(p.size * k, 3.5);
+          const sz = Math.min(p.size * k, 3.2);
           if (px >= 0 && px <= w && py >= 0 && py <= h) {
             ctx.beginPath(); ctx.arc(px, py, Math.max(0.5, sz), 0, Math.PI * 2);
             ctx.fillStyle = p.color;
@@ -4084,51 +4483,7 @@
       animate();
     }
 
-    // No-ops for backward compat
     function setup3DTiltEffects() {}
-);
-    }
-
-    function select3dOption(type, element) {
-      const parent = element.parentElement;
-      parent.querySelectorAll('.card-3d').forEach(c => {
-        c.classList.remove('selected');
-        c.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-      });
-      element.classList.add('selected');
-      element.style.transform = 'translateY(-4px) scale(1.02)';
-
-      if (type === 'goal') {
-        currentOnboardingState.goal = element.getAttribute('data-goal');
-        const titleEl = element.querySelector('.card-3d-title');
-        currentOnboardingState.goalText = titleEl ? titleEl.innerText : 'Luyện Thi';
-      } else if (type === 'baseline') {
-        currentOnboardingState.baseline = element.getAttribute('data-baseline');
-        currentOnboardingState.baselineText = currentOnboardingState.baseline;
-      }
-      updateOnboardingSummary();
-    }
-
-    function selectTargetLevel(lvl, btn) {
-      document.querySelectorAll('#targetLevelGroup .pill-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentOnboardingState.targetLevel = lvl;
-      updateOnboardingSummary();
-    }
-
-    function selectDailyTime(time, btn) {
-      document.querySelectorAll('#dailyTimeGroup .pill-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentOnboardingState.dailyTime = time;
-      updateOnboardingSummary();
-    }
-
-    function updateOnboardingSummary() {
-      const summaryEl = document.getElementById('onboardingSummaryPreview');
-      if (summaryEl) {
-        summaryEl.innerHTML = `Lộ trình: <span class="summary-highlight">${currentOnboardingState.baselineText}</span> ➔ <span class="summary-highlight">CEFR ${currentOnboardingState.targetLevel} Academic</span> • Trọng tâm: <span class="summary-highlight">${currentOnboardingState.goalText}</span> • Cam kết: <span class="summary-highlight">${currentOnboardingState.dailyTime} phút / ngày</span>`;
-      }
-    }
 
     function launchPersonalizedJourney() {
       localStorage.setItem('smarteng_onboarded', 'true');
@@ -4137,36 +4492,29 @@
       applyUserProfile(currentOnboardingState);
 
       const portal = document.getElementById('onboardingPortal3D');
-      portal.style.transition = 'opacity 0.6s ease, transform 0.6s cubic-bezier(0.8, 0, 0.2, 1)';
-      portal.style.opacity = '0';
-      portal.style.transform = 'scale(1.08) translateY(-30px)';
-
-      setTimeout(() => {
+      if (portal) {
         portal.classList.remove('active');
-        portal.style.display = 'none';
-        showToast(`🎉 Đã kích hoạt lộ trình CEFR ${currentOnboardingState.targetLevel} thành công!`);
-      }, 600);
+      }
+      showToast('Đã kích hoạt lộ trình học tập cá nhân hóa thành công!');
     }
 
     function openOnboardingModal() {
       const portal = document.getElementById('onboardingPortal3D');
-      portal.style.display = 'flex';
-      setTimeout(() => {
+      if (portal) {
         portal.classList.add('active');
-        portal.style.opacity = '1';
-        portal.style.transform = 'scale(1)';
-      }, 10);
+        portal.scrollTop = 0;
+        // Reset to first step
+        document.querySelectorAll('.ob-step').forEach((s, idx) => {
+          s.classList.toggle('active', idx === 0);
+        });
+      }
     }
 
     function closeOnboardingModal() {
       const portal = document.getElementById('onboardingPortal3D');
-      portal.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      portal.style.opacity = '0';
-      portal.style.transform = 'scale(0.96)';
-      setTimeout(() => {
+      if (portal) {
         portal.classList.remove('active');
-        portal.style.display = 'none';
-      }, 400);
+      }
     }
 
     function applyUserProfile(profile) {
@@ -4193,8 +4541,7 @@
           const profile = JSON.parse(saved);
           applyUserProfile(profile);
           const portal = document.getElementById('onboardingPortal3D');
-          portal.classList.remove('active');
-          portal.style.display = 'none';
+          if (portal) portal.classList.remove('active');
           return;
         } catch (e) {}
       }
