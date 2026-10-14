@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
     Optional<Vocabulary> findByWordIgnoreCase(String word);
     List<Vocabulary> findByTopicIgnoreCase(String topic);
+    List<Vocabulary> findByTopicIgnoreCaseOrderByIdDesc(String topic);
     List<Vocabulary> findByCefrLevelIgnoreCase(String cefrLevel);
 }
 

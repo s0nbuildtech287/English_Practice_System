@@ -1564,7 +1564,7 @@
             <table class="vocab-table">
               <thead>
                 <tr>
-                  <th style="width: 170px;">Từ Vựng & Từ Loại</th>
+                  <th style="width: 190px;">Từ Vựng & Từ Loại</th>
                   <th style="width: 130px;">Phiên Âm IPA</th>
                   <th style="width: 220px;">Ý Nghĩa Tiếng Việt</th>
                   <th>Định Nghĩa Tiếng Anh & Ví Dụ Ngữ Cảnh</th>
@@ -1575,6 +1575,16 @@
                 <!-- Rendered via JS -->
               </tbody>
             </table>
+
+            <!-- PAGINATION BAR -->
+            <div id="topicPaginationBar" style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1.25rem; border-top: 1px solid var(--border); background: var(--bg-surface-elevated); border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); flex-wrap: wrap; gap: 0.75rem;">
+              <div style="font-size: 0.85rem; color: var(--text-sub);">
+                Hiển thị <strong id="topicPageRange" style="color: #FFFFFF;">0 - 0</strong> trên tổng số <strong id="topicTotalCount" style="color: #93C5FD;">0</strong> từ vựng
+              </div>
+              <div style="display: flex; gap: 0.35rem; align-items: center;" id="topicPaginationBtns">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2707,8 +2717,17 @@
       `).join('');
     }
 
+    let topicCurrentPage = 1;
+    const topicPageSize = 8;
+    let curTopicFilteredWords = [];
+    const newlyCrawledWordIds = new Set();
+
     async function openTopicDetail(topicCode) {
       curTopicCode = topicCode;
+      topicCurrentPage = 1;
+      const filterInput = document.getElementById('topicWordFilter');
+      if (filterInput) filterInput.value = '';
+
       const meta = topicLibraryData.find(t => t.code === topicCode);
       if (meta) {
         document.getElementById('curTopicName').innerText = meta.title;
@@ -2717,13 +2736,15 @@
       document.getElementById('topicsOverviewGrid').style.display = 'none';
       document.getElementById('topicDetailContainer').style.display = 'block';
       document.getElementById('topicWordsTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-sub);">Đang tải danh sách từ vựng...</td></tr>';
+      document.getElementById('topicPaginationBar').style.display = 'none';
 
       try {
         const res = await fetch(`${API_BASE}/vocabulary/topics/${topicCode}`);
         const json = await res.json();
         if (json.success && json.data) {
           curTopicWords = json.data;
-          renderTopicWords(curTopicWords);
+          curTopicFilteredWords = curTopicWords;
+          renderTopicPage();
         }
       } catch (err) {
         document.getElementById('topicWordsTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #F87171;">Không thể tải dữ liệu chủ đề. Vui lòng thử lại.</td></tr>';
@@ -2739,33 +2760,65 @@
     function filterTopicWords(q) {
       const clean = q.trim().toLowerCase();
       if (!clean) {
-        renderTopicWords(curTopicWords);
-        return;
+        curTopicFilteredWords = curTopicWords;
+      } else {
+        curTopicFilteredWords = curTopicWords.filter(w => 
+          (w.word && w.word.toLowerCase().includes(clean)) ||
+          (w.meaningVi && w.meaningVi.toLowerCase().includes(clean)) ||
+          (w.meaningEn && w.meaningEn.toLowerCase().includes(clean))
+        );
       }
-      const filtered = curTopicWords.filter(w => 
-        (w.word && w.word.toLowerCase().includes(clean)) ||
-        (w.meaningVi && w.meaningVi.toLowerCase().includes(clean)) ||
-        (w.meaningEn && w.meaningEn.toLowerCase().includes(clean))
-      );
-      renderTopicWords(filtered);
+      topicCurrentPage = 1;
+      renderTopicPage();
     }
 
-    function renderTopicWords(words) {
+    function setTopicPage(page) {
+      const totalPages = Math.ceil(curTopicFilteredWords.length / topicPageSize) || 1;
+      if (page < 1 || page > totalPages) return;
+      topicCurrentPage = page;
+      renderTopicPage();
+      const tableElem = document.getElementById('topicDetailContainer');
+      if (tableElem) {
+        tableElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function renderTopicPage() {
       const tbody = document.getElementById('topicWordsTableBody');
-      if (!words || words.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-sub);">Chưa có từ vựng nào trong chủ đề này. Hãy bấm "Cào thêm từ mới".</td></tr>';
+      const total = curTopicFilteredWords.length;
+      const paginationBar = document.getElementById('topicPaginationBar');
+
+      if (!curTopicFilteredWords || total === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-sub);">Chưa tìm thấy từ vựng nào trong chủ đề này. Hãy bấm "+ Cào Thêm Từ Mới".</td></tr>';
+        if (paginationBar) paginationBar.style.display = 'none';
         return;
       }
-      tbody.innerHTML = words.map(w => {
+
+      if (paginationBar) paginationBar.style.display = 'flex';
+
+      const totalPages = Math.ceil(total / topicPageSize) || 1;
+      if (topicCurrentPage > totalPages) topicCurrentPage = totalPages;
+      const start = (topicCurrentPage - 1) * topicPageSize;
+      const end = Math.min(start + topicPageSize, total);
+      const pageWords = curTopicFilteredWords.slice(start, end);
+
+      document.getElementById('topicPageRange').innerText = `${start + 1} - ${end}`;
+      document.getElementById('topicTotalCount').innerText = `${total}`;
+
+      tbody.innerHTML = pageWords.map(w => {
         let cleanVi = w.meaningVi || '';
         if (cleanVi.includes('%')) {
           try { cleanVi = decodeURIComponent(cleanVi); } catch (e) {}
         }
+        const isNew = newlyCrawledWordIds.has(w.id);
         return `
-          <tr>
+          <tr style="${isNew ? 'background: rgba(59, 130, 246, 0.08);' : ''}">
             <td>
-              <div style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF;">${w.word}</div>
-              <span class="cefr-tag b1" style="font-size: 0.72rem; padding: 0.15rem 0.45rem; text-transform: lowercase;">${w.partOfSpeech || 'term'}</span>
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <span style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF;">${w.word}</span>
+                ${isNew ? '<span class="cefr-tag b2" style="font-size: 0.65rem; padding: 0.1rem 0.35rem; background: rgba(59, 130, 246, 0.25); color: #93C5FD; border: 1px solid #3B82F6;">Mới Cào</span>' : ''}
+              </div>
+              <span class="cefr-tag b1" style="font-size: 0.72rem; padding: 0.15rem 0.45rem; text-transform: lowercase; margin-top: 0.25rem;">${w.partOfSpeech || 'term'}</span>
             </td>
             <td style="font-family: var(--font-mono); color: var(--cambridge-gold); font-size: 0.95rem;">${w.ipa || `/${w.word}/`}</td>
             <td style="font-weight: 700; color: #93C5FD; font-size: 0.98rem; line-height: 1.45;">${cleanVi}</td>
@@ -2782,6 +2835,27 @@
           </tr>
         `;
       }).join('');
+
+      renderPaginationButtons(totalPages);
+    }
+
+    function renderPaginationButtons(totalPages) {
+      const container = document.getElementById('topicPaginationBtns');
+      if (!container) return;
+
+      let html = '';
+      html += `<button class="pill-btn ${topicCurrentPage === 1 ? 'disabled' : ''}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; cursor: ${topicCurrentPage === 1 ? 'not-allowed' : 'pointer'}; opacity: ${topicCurrentPage === 1 ? '0.5' : '1'};" onclick="setTopicPage(${topicCurrentPage - 1})">← Trang Trước</button>`;
+
+      for (let p = 1; p <= totalPages; p++) {
+        if (p === 1 || p === totalPages || (p >= topicCurrentPage - 1 && p <= topicCurrentPage + 1)) {
+          html += `<button class="pill-btn ${p === topicCurrentPage ? 'active' : ''}" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; min-width: 32px;" onclick="setTopicPage(${p})">${p}</button>`;
+        } else if (p === topicCurrentPage - 2 || p === topicCurrentPage + 2) {
+          html += `<span style="color: var(--text-muted); padding: 0 0.2rem;">...</span>`;
+        }
+      }
+
+      html += `<button class="pill-btn ${topicCurrentPage === totalPages ? 'disabled' : ''}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; cursor: ${topicCurrentPage === totalPages ? 'not-allowed' : 'pointer'}; opacity: ${topicCurrentPage === totalPages ? '0.5' : '1'};" onclick="setTopicPage(${topicCurrentPage + 1})">Trang Sau →</button>`;
+      container.innerHTML = html;
     }
 
     async function crawlMoreTopicWords() {
@@ -2791,8 +2865,24 @@
         const res = await fetch(`${API_BASE}/vocabulary/topics/${curTopicCode}/crawl-more`, { method: 'POST' });
         const json = await res.json();
         if (json.success) {
-          showToast(json.message || `Đã nạp thêm từ mới thành công!`);
-          openTopicDetail(curTopicCode);
+          if (json.data && Array.isArray(json.data)) {
+            json.data.forEach(item => newlyCrawledWordIds.add(item.id));
+          }
+          showToast(json.message || `Đã nạp thêm từ mới thành công vào đầu trang!`);
+          
+          // Re-fetch to get newest words at top of list
+          const freshRes = await fetch(`${API_BASE}/vocabulary/topics/${curTopicCode}`);
+          const freshJson = await freshRes.json();
+          if (freshJson.success && freshJson.data) {
+            curTopicWords = freshJson.data;
+            const filterInput = document.getElementById('topicWordFilter');
+            if (filterInput) filterInput.value = '';
+            curTopicFilteredWords = curTopicWords;
+            topicCurrentPage = 1;
+            renderTopicPage();
+            const detailElem = document.getElementById('topicDetailContainer');
+            if (detailElem) detailElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }
       } catch (e) {
         showToast('Có lỗi khi cào nạp từ mới.');

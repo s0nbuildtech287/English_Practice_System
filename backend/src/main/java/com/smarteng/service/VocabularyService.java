@@ -69,7 +69,7 @@ public class VocabularyService {
         if (topicCode == null || topicCode.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return vocabularyRepository.findByTopicIgnoreCase(topicCode.trim());
+        return vocabularyRepository.findByTopicIgnoreCaseOrderByIdDesc(topicCode.trim());
     }
 
     public List<Vocabulary> crawlMoreWordsForTopic(String topicCode) {
@@ -104,13 +104,27 @@ public class VocabularyService {
                     for (JsonNode item : arr) {
                         if (item.has("word")) {
                             String w = item.get("word").asText().trim().toLowerCase();
-                            if (w.matches("^[a-zA-Z\\-]+$") && vocabularyRepository.findByWordIgnoreCase(w).isEmpty()) {
-                                Vocabulary v = dictionaryService.lookupWord(w);
-                                if (v != null) {
-                                    v.setTopic(cleanTopic);
-                                    v.setCefrLevel(cleanTopic.startsWith("A") || cleanTopic.startsWith("B") || cleanTopic.startsWith("C") ? cleanTopic : "B2");
-                                    vocabularyRepository.save(v);
-                                    newlyAdded.add(v);
+                            if (w.matches("^[a-zA-Z\\-]+$")) {
+                                try {
+                                    var existingOpt = vocabularyRepository.findByWordIgnoreCase(w);
+                                    if (existingOpt.isPresent()) {
+                                        Vocabulary existing = existingOpt.get();
+                                        if (!cleanTopic.equalsIgnoreCase(existing.getTopic())) {
+                                            existing.setTopic(cleanTopic);
+                                            vocabularyRepository.save(existing);
+                                            newlyAdded.add(existing);
+                                        }
+                                    } else {
+                                        Vocabulary v = dictionaryService.lookupWord(w);
+                                        if (v != null) {
+                                            v.setTopic(cleanTopic);
+                                            v.setCefrLevel(cleanTopic.startsWith("A") || cleanTopic.startsWith("B") || cleanTopic.startsWith("C") ? cleanTopic : "B2");
+                                            vocabularyRepository.save(v);
+                                            newlyAdded.add(v);
+                                        }
+                                    }
+                                } catch (Exception wordEx) {
+                                    log.debug("Skip word {}: {}", w, wordEx.getMessage());
                                 }
                             }
                         }
