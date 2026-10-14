@@ -1,7 +1,7 @@
 Write-Host "========================================================" -ForegroundColor Cyan
-Write-Host "  SMART ENGLISH - INTERACTIVE READ & LISTEN APP" -ForegroundColor Yellow
+Write-Host "  PRACTICE ENGLISH - CEFR ACADEMIC PLATFORM" -ForegroundColor Yellow
 Write-Host "  Backend API: http://localhost:8080/swagger-ui.html" -ForegroundColor Green
-Write-Host "  Flutter App: http://localhost:4000" -ForegroundColor Green
+Write-Host "  Web Portal:  http://localhost:8080" -ForegroundColor Green
 Write-Host "========================================================" -ForegroundColor Cyan
 
 # 1. Start Backend if not already running

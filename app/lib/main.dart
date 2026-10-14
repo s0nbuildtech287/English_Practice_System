@@ -12,7 +12,7 @@ class SmartEngApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Smart English - Read & Listen',
+      title: 'Practice English',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

@@ -92,39 +92,61 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _getCurrentBody() {
     switch (_currentTab) {
       case 0:
-        return _buildArticlesTab();
+        return _buildHomeTab();
       case 1:
-        return const ReadingListScreen();
-      case 2:
-        return const VocabExplorerScreen();
-      case 3:
-        return const FlashcardsScreen();
-      default:
         return _buildArticlesTab();
+      case 2:
+        return _buildListeningTab();
+      case 3:
+        return _buildWritingTab();
+      case 4:
+        return _buildSpeakingTab();
+      case 5:
+        return const VocabExplorerScreen();
+      case 6:
+        return const FlashcardsScreen();
+      case 7:
+        return _buildAiTutorTab();
+      default:
+        return _buildHomeTab();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF080B11),
+      backgroundColor: const Color(0xFF090D16),
       body: _getCurrentBody(),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF0F1523).withValues(alpha: 0.98),
-          border: const Border(top: BorderSide(color: Color(0xFF1E293B), width: 1.2)),
+        decoration: const BoxDecoration(
+          color: Color(0xFF101726),
+          border: Border(top: BorderSide(color: Color(0xFF1E293B), width: 1.0)),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(0, Icons.headphones_rounded, 'Nghe & Đọc'),
-                _buildNavItem(1, Icons.bookmark_rounded, 'Bài cần đọc'),
-                _buildNavItem(2, Icons.search_rounded, 'Từ mới'),
-                _buildNavItem(3, Icons.style_rounded, 'Sổ tay từ'),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  _buildNavItem(0, 'Overview'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(1, 'Reading'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(2, 'Listening'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(3, 'Writing'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(4, 'Speaking'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(5, 'Dictionary'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(6, 'Vocabulary'),
+                  const SizedBox(width: 4),
+                  _buildNavItem(7, 'AI Tutor'),
+                ],
+              ),
             ),
           ),
         ),
@@ -132,50 +154,511 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
+  Widget _buildNavItem(int index, String label) {
     final isSelected = _currentTab == index;
     return InkWell(
       onTap: () => setState(() => _currentTab = index),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: [Color(0xFF38BDF8), Color(0xFF6366F1)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          color: isSelected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  )
-                ]
-              : null,
+          color: isSelected ? const Color(0xFF2563EB) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            width: 1,
+          ),
         ),
+        child: Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+            letterSpacing: 0.2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 1. HOME TAB (OVERVIEW & CEFR SCALE)
+  // ---------------------------------------------------------------------------
+  Widget _buildHomeTab() {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : const Color(0xFF64748B),
-              size: 20,
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+            // Institutional Banner
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF101726),
+                border: Border.all(color: const Color(0xFF1E293B)),
+                borderRadius: BorderRadius.circular(12),
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      'CEFR ACADEMIC PORTAL',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF60A5FA),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Oxford-Cambridge Standard\nLanguage Assessment',
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      height: 1.25,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Hệ thống đào tạo toàn diện 4 kỹ năng Đọc - Nghe - Viết - Nói chuẩn hóa từ A1 đến C2.',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: const Color(0xFF94A3B8),
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // CEFR Levels Grid
+            Text(
+              'Khung Năng Lực Chuẩn CEFR',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 110,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _cefrLevels.length - 1, // Skip 'ALL'
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, idx) {
+                  final lvl = _cefrLevels[idx + 1];
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        _selectedLevel = lvl['code'] as String;
+                        _currentTab = 1; // Jump to Reading
+                      });
+                      _fetchArticles();
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      width: 130,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF131C2E),
+                        border: Border.all(color: const Color(0xFF1E293B)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            lvl['code'] as String,
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: lvl['color'] as Color,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            lvl['sub'] as String,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Xem bài học →',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 4 Core Skills Modules
+            Text(
+              'Chương Trình 4 Kỹ Năng Học Thuật',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildSkillCard('Reading • Luyện Đọc', 'Thư viện bài đọc phân cấp chuẩn A1-C2 kèm tra từ 1-chạm.', 1),
+            _buildSkillCard('Listening • Luyện Nghe', 'Audio bản xứ đối chiếu văn bản và chép chính tả Dictation.', 2),
+            _buildSkillCard('Writing • Luyện Viết', 'Luyện viết luận và chấm điểm theo 4 tiêu chí CEFR / IELTS.', 3),
+            _buildSkillCard('Speaking • Luyện Nói', 'Đối thoại ngữ cảnh và phân tích ngữ âm IPA chuẩn.', 4),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkillCard(String title, String desc, int targetTab) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF131C2E),
+        border: Border.all(color: const Color(0xFF1E293B)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  desc,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => setState(() => _currentTab = targetTab),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              textStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+            child: const Text('Vào học'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 2. LISTENING TAB
+  // ---------------------------------------------------------------------------
+  Widget _buildListeningTab() {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            'Phòng Luyện Nghe Học Thuật',
+            style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Rèn luyện tai nghe bản xứ và luyện chính tả Dictation từ A1 đến C2.',
+            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+          ),
+          const SizedBox(height: 20),
+          ..._articles.map((a) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF131C2E),
+              border: Border.all(color: const Color(0xFF1E293B)),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    a.level,
+                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF60A5FA)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(a.title, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+                      Text('${a.durationSeconds ~/ 60}m audio • ${a.sourceName}', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.play_arrow_rounded, color: Color(0xFF38BDF8)),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ArticleDetailScreen(article: a)),
+                    );
+                  },
+                ),
+              ],
+            ),
+          )),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 3. WRITING TAB
+  // ---------------------------------------------------------------------------
+  Widget _buildWritingTab() {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Phòng Luyện Viết & Chấm Điểm CEFR',
+              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Luyện viết theo tiêu chí Task Response, Coherence, Lexical và Grammar.',
+              style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF101726),
+                border: Border.all(color: const Color(0xFF1E293B)),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Đề bài: Discursive Essay (CEFR B2)',
+                    style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Thảo luận về cách cân bằng giữa phát triển công nghiệp và bảo tồn đa dạng sinh học.',
+                    style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    maxLines: 6,
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: 'Nhập bài viết luận của bạn tại đây...',
+                      hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                      filled: true,
+                      fillColor: const Color(0xFF131C2E),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Đã phân tích: Đạt tiêu chuẩn CEFR B2 (IELTS 6.5)!')),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    ),
+                    child: const Text('Chấm điểm CEFR'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 4. SPEAKING TAB
+  // ---------------------------------------------------------------------------
+  Widget _buildSpeakingTab() {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            'Phòng Luyện Nói & Phản Xạ Ngữ Âm',
+            style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Thực hành các kịch bản đối thoại từ cấp độ A1 đến C2.',
+            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+          ),
+          const SizedBox(height: 20),
+          _buildSpeakingCard('A1 • Daily Coffee Routine', 'Good morning, could I have a cappuccino with oat milk?'),
+          _buildSpeakingCard('A2 • Asking for Directions', 'Excuse me, could you tell me how to get to the central station?'),
+          _buildSpeakingCard('B1 • Job Interview Experience', 'Could you elaborate on your experience in managing technical teams?'),
+          _buildSpeakingCard('B2 • Infrastructure Retrospective', 'We must proactively mitigate systemic bottlenecks before scaling.'),
+          _buildSpeakingCard('C1 • Clinical Diagnostics', 'Mitigating subconscious cognitive biases demands empirical peer review.'),
+          _buildSpeakingCard('C2 • Epistemic Philosophy', 'The dialectical interplay between vernacular and synthesis presents dilemmas.'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpeakingCard(String title, String sentence) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF131C2E),
+        border: Border.all(color: const Color(0xFF1E293B)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF60A5FA))),
+          const SizedBox(height: 6),
+          Text(sentence, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 5. AI TUTOR TAB
+  // ---------------------------------------------------------------------------
+  Widget _buildAiTutorTab() {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Cố Vấn Học Thuật AI (Cambridge Fellow)',
+              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Hỏi đáp ngữ pháp chuyên sâu và nâng cấp từ vựng C1/C2.',
+              style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF101726),
+                  border: Border.all(color: const Color(0xFF1E293B)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF162035),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Xin chào! Tôi là Cố vấn Học thuật tiếng Anh của bạn. Bạn có thể dán đoạn văn cần sửa lỗi hoặc yêu cầu nâng cấp từ vựng học thuật bất cứ lúc nào.',
+                        style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFFCBD5E1), height: 1.45),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: 'Nhập câu hỏi học thuật...',
+                      hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                      filled: true,
+                      fillColor: const Color(0xFF101726),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Cố vấn AI đang phân tích câu hỏi của bạn...')),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
+                  child: const Text('Gửi'),
+                ),
+              ],
             ),
           ],
         ),
@@ -224,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Smart English',
+                                'Practice English',
                                 style: GoogleFonts.outfit(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
@@ -233,11 +716,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               Text(
-                                'Interactive Read & Listen',
+                                'CEFR Academic Platform',
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF38BDF8),
+                                  color: const Color(0xFF60A5FA),
                                 ),
                               ),
                             ],

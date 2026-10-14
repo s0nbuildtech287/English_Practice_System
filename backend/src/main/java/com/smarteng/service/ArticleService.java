@@ -52,8 +52,8 @@ public class ArticleService {
         List<Article> existing = articleRepository.findAll();
         if (existing.size() >= 6) {
             for (Article a : existing) {
-                if (a.getAudioUrl() == null || a.getAudioUrl().contains("voanews.com")) {
-                    a.setAudioUrl("http://localhost:4000/audio/article" + a.getId() + ".mp3");
+                if (a.getAudioUrl() == null || a.getAudioUrl().contains("voanews.com") || a.getAudioUrl().contains("localhost:4000")) {
+                    a.setAudioUrl("/audio/article" + a.getId() + ".mp3");
                     articleRepository.save(a);
                 }
             }
@@ -71,7 +71,7 @@ public class ArticleService {
                 .topic("Technology")
                 .level("B1")
                 .sourceName("BBC Learning English")
-                .audioUrl("http://localhost:4000/audio/article1.mp3")
+                .audioUrl("/audio/article1.mp3")
                 .durationSeconds(120)
                 .isBookmarked(true)
                 .content("Scientists are using artificial intelligence to discover new antibiotics and medicines faster than ever before. " +
@@ -88,7 +88,7 @@ public class ArticleService {
                 .topic("Health")
                 .level("A2")
                 .sourceName("VOA Learning English")
-                .audioUrl("http://localhost:4000/audio/article2.mp3")
+                .audioUrl("/audio/article2.mp3")
                 .durationSeconds(110)
                 .isBookmarked(false)
                 .content("Walking is one of the easiest and most effective forms of physical exercise. " +
@@ -106,7 +106,7 @@ public class ArticleService {
                 .topic("Environment")
                 .level("B2")
                 .sourceName("National Geographic")
-                .audioUrl("http://localhost:4000/audio/article3.mp3")
+                .audioUrl("/audio/article3.mp3")
                 .durationSeconds(135)
                 .isBookmarked(false)
                 .content("Coral reefs represent some of the most diverse and fragile marine ecosystems on Earth. " +
@@ -123,7 +123,7 @@ public class ArticleService {
                 .topic("Daily Life")
                 .level("A1")
                 .sourceName("Easy English")
-                .audioUrl("http://localhost:4000/audio/article4.mp3")
+                .audioUrl("/audio/article4.mp3")
                 .durationSeconds(95)
                 .isBookmarked(false)
                 .content("My name is Peter and I live in London. Every morning, I wake up at seven o'clock. " +
@@ -138,7 +138,7 @@ public class ArticleService {
                 .topic("Psychology")
                 .level("C1")
                 .sourceName("Harvard Review")
-                .audioUrl("http://localhost:4000/audio/article5.mp3")
+                .audioUrl("/audio/article5.mp3")
                 .durationSeconds(145)
                 .isBookmarked(false)
                 .content("Human cognition is frequently susceptible to systematic errors known as cognitive biases. " +
@@ -154,7 +154,7 @@ public class ArticleService {
                 .topic("Philosophy & AI")
                 .level("C2")
                 .sourceName("Oxford Academic")
-                .audioUrl("http://localhost:4000/audio/article6.mp3")
+                .audioUrl("/audio/article6.mp3")
                 .durationSeconds(155)
                 .isBookmarked(false)
                 .content("The dialectical interplay between human linguistic vernacular and algorithmic synthesis presents profound epistemological dilemmas. " +
