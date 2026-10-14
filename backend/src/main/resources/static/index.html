@@ -2075,12 +2075,22 @@
       });
     }
 
-    function renderSideDict(data) {
+    async function renderSideDict(data) {
       currentSideWordObj = data;
       document.getElementById('sideWordHead').innerText = data.word;
       document.getElementById('sideWordIpa').innerText = data.ipa || `/${data.word}/`;
       document.getElementById('sideWordEn').innerText = data.meaningEn || data.definition || 'Definition in English';
-      document.getElementById('sideWordVi').innerText = data.meaningVi || 'Bấm để lưu từ vào sổ tay cá nhân';
+      
+      let viMeaning = data.meaningVi;
+      if (!viMeaning || viMeaning.trim() === '' || viMeaning.includes('chuẩn xác') || viMeaning.includes('Bấm để lưu') || viMeaning.includes('ngữ cảnh bài đọc')) {
+        document.getElementById('sideWordVi').innerText = 'Đang dịch nghĩa tiếng Việt...';
+        viMeaning = await translateToVi(data.word);
+        if (!viMeaning || viMeaning.toLowerCase() === data.word.toLowerCase()) {
+          viMeaning = await translateToVi(data.meaningEn || data.definition);
+        }
+        data.meaningVi = viMeaning || 'Từ vựng bài đọc';
+      }
+      document.getElementById('sideWordVi').innerText = viMeaning;
     }
 
     function playSideAudio() {
@@ -2495,14 +2505,55 @@
       document.getElementById('dictLoadingNotice').style.display = 'none';
     }
 
-    function renderDictResult(data) {
+    async function translateToVi(text) {
+      if (!text || !text.trim()) return '';
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&dt=bd&q=${encodeURIComponent(text.trim())}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        // 1. Try bilingual dictionary block
+        if (json && json[1] && Array.isArray(json[1])) {
+          const blocks = [];
+          for (const b of json[1]) {
+            if (Array.isArray(b) && b.length >= 2) {
+              const pos = b[0];
+              const words = Array.isArray(b[1]) ? b[1].slice(0, 3).join(', ') : '';
+              if (words) blocks.push(`(${pos}) ${words}`);
+            }
+          }
+          if (blocks.length > 0) return blocks.join('; ');
+        }
+        // 2. Direct sentence translation
+        if (json && json[0] && Array.isArray(json[0])) {
+          return json[0].map(p => p[0]).join('').trim();
+        }
+      } catch (err) {
+        console.warn('Translation error', err);
+      }
+      return '';
+    }
+
+    async function renderDictResult(data) {
       lastSearchedWord = data;
       document.getElementById('resWord').innerText = data.word;
-      document.getElementById('resPos').innerText = data.pos || 'term';
+      document.getElementById('resPos').innerText = data.partOfSpeech || data.pos || 'term';
       document.getElementById('resCefr').innerText = `CEFR ${data.cefr || 'B2'}`;
       document.getElementById('resIpa').innerText = data.ipa || `/${data.word}/`;
       document.getElementById('resDefEn').innerText = data.meaningEn || data.definition || 'Academic definition';
-      document.getElementById('resDefVi').innerText = data.meaningVi || 'Ý nghĩa tiếng Việt chuẩn xác';
+      
+      let viMeaning = data.meaningVi;
+      if (viMeaning && viMeaning.includes('%')) {
+        try { viMeaning = decodeURIComponent(viMeaning); } catch (e) {}
+      }
+      if (!viMeaning || viMeaning.trim() === '' || viMeaning.includes('chuẩn xác') || viMeaning.includes('tiếng Anh') || viMeaning.startsWith('Để được hưởng')) {
+        document.getElementById('resDefVi').innerText = 'Đang tra nghĩa tiếng Việt...';
+        viMeaning = await translateToVi(data.word);
+        if (!viMeaning || viMeaning.toLowerCase() === data.word.toLowerCase()) {
+          viMeaning = await translateToVi(data.meaningEn || data.definition);
+        }
+        data.meaningVi = viMeaning || 'Thuật ngữ tiếng Anh';
+      }
+      document.getElementById('resDefVi').innerText = viMeaning;
       document.getElementById('resExample').innerText = `"${data.example || data.exampleSentence || 'Example sentence in context.'}"`;
       document.getElementById('dictMainResult').style.display = 'block';
     }
