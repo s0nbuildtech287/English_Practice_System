@@ -8,6 +8,7 @@ import java.util.List;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findAllByOrderByIdDesc();
+    List<Article> findAllByOrderByIdAsc();
     List<Article> findByLevelIgnoreCase(String level);
     List<Article> findByLevelIgnoreCaseOrderByIdDesc(String level);
     List<Article> findByTopicIgnoreCase(String topic);

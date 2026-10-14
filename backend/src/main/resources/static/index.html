@@ -913,6 +913,21 @@
     @media (max-width: 860px) {
       .mobile-bottom-bar {
         display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        justify-content: flex-start;
+        gap: 0.4rem;
+        padding: 0 0.85rem;
+      }
+      .mobile-bottom-bar::-webkit-scrollbar {
+        display: none;
+      }
+      .bottom-nav-item {
+        flex-shrink: 0;
+        white-space: nowrap;
+        font-size: 0.78rem;
+        padding: 0.45rem 0.8rem;
       }
     }
 
@@ -1202,6 +1217,8 @@
                 <div class="dict-meaning" id="sideWordEn">A medicine that inhibits the growth of or destroys microorganisms.</div>
                 <div class="dict-vi" id="sideWordVi">Thuốc kháng sinh diệt khuẩn.</div>
                 <button class="btn-action-primary" style="width: 100%;" onclick="saveCurrentSideWord()">+ Lưu Vào Sổ Từ Vựng</button>
+                <button class="btn-action-outline" style="width: 100%; margin-top: 0.5rem; border-color: rgba(99,102,241,0.5); color: #818CF8; font-weight: 600;" onclick="askGeminiAboutWord()">✨ Hỏi Gemini AI Phân Tích</button>
+                <div id="sideAiExplanation" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: rgba(15,23,42,0.7); border-radius: 8px; border: 1px solid rgba(99,102,241,0.3); font-size: 0.82rem; line-height: 1.5; color: #E2E8F0; white-space: pre-wrap;"></div>
               </div>
             </div>
 
@@ -2207,10 +2224,22 @@
       document.getElementById('labArticleSource').innerText = `Nguồn: ${article.sourceName || 'Academic Reading'}`;
       document.getElementById('labReadingDuration').innerText = `Thời lượng: ${Math.round((article.durationSeconds || 120) / 60)} phút`;
 
-      // Normalize Audio URL
-      let audioUrl = article.audioUrl || `/audio/article${article.id}.mp3`;
-      audioUrl = audioUrl.replace(/http:\/\/localhost:\d+\/audio\//, '/audio/');
-      labAudio.src = audioUrl;
+      // Normalize Audio URL & Reset TTS
+      stopTtsPassage();
+      let audioUrl = (article.audioUrl || '').trim();
+      if (audioUrl) {
+        audioUrl = audioUrl.replace(/http:\/\/localhost:\d+\/audio\//, '/audio/');
+        labAudio.src = audioUrl;
+        labAudio.load();
+      } else {
+        labAudio.removeAttribute('src');
+        labAudio.load();
+        const wordCount = (article.content || '').split(/\s+/).length;
+        const estSec = Math.max(30, Math.round((wordCount / 130) * 60));
+        document.getElementById('labAudioProgress').style.width = '0%';
+        document.getElementById('labAudioCurTime').innerText = '00:00';
+        document.getElementById('labAudioTotalTime').innerText = formatAudioTime(estSec);
+      }
 
       // Wrap each word with clickable lookup span
       const words = article.content.split(/\s+/);
@@ -2220,29 +2249,109 @@
       }).join(' ');
 
       document.getElementById('labArticleBody').innerHTML = `<p>${interactiveHtml}</p>`;
+      renderLabQuiz(article);
       window.scrollTo({ top: 180, behavior: 'smooth' });
+    }
+
+    let ttsActive = false;
+    let ttsTimer = null;
+    let ttsEstDuration = 60;
+    let labPlaybackRate = 1.0;
+
+    function playTtsSpeech(text, lang = 'en-US') {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      utter.rate = labPlaybackRate;
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Zira')));
+      if (enVoice) utter.voice = enVoice;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function stopTtsPassage() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (ttsTimer) clearInterval(ttsTimer);
+      ttsActive = false;
+      const btn = document.getElementById('labPlayPauseBtn');
+      if (btn) btn.innerText = '►';
     }
 
     function closeReaderLab() {
       if (labAudio) labAudio.pause();
+      stopTtsPassage();
       document.getElementById('readerStudyLab').style.display = 'none';
       document.getElementById('articlesGrid').style.display = 'grid';
+    }
+
+    function playTtsPassage() {
+      if (!currentLabArticle || !('speechSynthesis' in window)) return;
+      stopTtsPassage();
+      const btn = document.getElementById('labPlayPauseBtn');
+      if (btn) btn.innerText = '❚❚';
+      ttsActive = true;
+
+      const text = currentLabArticle.content || '';
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = labPlaybackRate;
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Zira')));
+      if (enVoice) utter.voice = enVoice;
+
+      const words = text.split(/\s+/).length;
+      ttsEstDuration = Math.max(30, Math.round((words / (130 * labPlaybackRate)) * 60));
+      document.getElementById('labAudioTotalTime').innerText = formatAudioTime(ttsEstDuration);
+
+      let elapsed = 0;
+      ttsTimer = setInterval(() => {
+        elapsed++;
+        if (elapsed > ttsEstDuration) elapsed = ttsEstDuration;
+        const pct = Math.min(100, (elapsed / ttsEstDuration) * 100);
+        document.getElementById('labAudioProgress').style.width = `${pct}%`;
+        document.getElementById('labAudioCurTime').innerText = formatAudioTime(elapsed);
+      }, 1000);
+
+      utter.onend = () => {
+        stopTtsPassage();
+        document.getElementById('labAudioProgress').style.width = '100%';
+      };
+      utter.onerror = () => {
+        stopTtsPassage();
+      };
+
+      window.speechSynthesis.speak(utter);
     }
 
     // Audio Controls for Reader Lab
     function togglePlayLabAudio() {
       const btn = document.getElementById('labPlayPauseBtn');
-      if (labAudio.paused) {
-        labAudio.play();
-        btn.innerText = '❚❚';
+      const hasAudioFile = labAudio.getAttribute('src') && labAudio.src !== '' && !labAudio.error;
+
+      if (hasAudioFile) {
+        if (labAudio.paused) {
+          labAudio.play().then(() => {
+            btn.innerText = '❚❚';
+          }).catch(() => {
+            playTtsPassage();
+          });
+        } else {
+          labAudio.pause();
+          btn.innerText = '►';
+        }
       } else {
-        labAudio.pause();
-        btn.innerText = '►';
+        if (!ttsActive) {
+          playTtsPassage();
+        } else {
+          stopTtsPassage();
+        }
       }
     }
 
     function changeLabSpeed(spd) {
-      if (labAudio) labAudio.playbackRate = parseFloat(spd);
+      labPlaybackRate = parseFloat(spd);
+      if (labAudio) labAudio.playbackRate = labPlaybackRate;
     }
 
     function seekLabAudio(e) {
@@ -2287,6 +2396,11 @@
       if (!word) return;
       const lower = word.toLowerCase();
       document.getElementById('sideDictBox').style.display = 'block';
+      const aiBox = document.getElementById('sideAiExplanation');
+      if (aiBox) { aiBox.style.display = 'none'; aiBox.innerText = ''; }
+      if (window.innerWidth <= 860) {
+        document.getElementById('sideDictBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
 
       // 1. Check offline academic dictionary first
       if (OFFLINE_ACADEMIC_DICT[lower]) {
@@ -2351,12 +2465,348 @@
       );
     }
 
+    async function askGeminiAboutWord() {
+      if (!currentSideWordObj || !currentSideWordObj.word) return;
+      const box = document.getElementById('sideAiExplanation');
+      box.style.display = 'block';
+      box.innerHTML = '<span style="color: #94A3B8;">🤖 Gemini AI đang phân tích ngữ cảnh...</span>';
+      try {
+        const res = await fetch(`${API_BASE}/ai/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: currentSideWordObj.word,
+            context: currentLabArticle ? currentLabArticle.content : ''
+          })
+        });
+        const json = await res.json();
+        if (json.success && json.answer) {
+          box.innerText = json.answer;
+        } else {
+          box.innerText = 'Chưa nhận được phản hồi từ AI.';
+        }
+      } catch (e) {
+        box.innerText = 'Lỗi kết nối đến Gemini AI.';
+      }
+    }
+
+    let currentLabQuiz = null;
+
+    const READING_QUIZ_BANK = [
+      {
+        keyword: "morning routine in london",
+        question: "1. Theo bài đọc, Peter thường di chuyển đến trường vào lúc 8 giờ sáng bằng phương tiện gì?",
+        options: [
+          "Đi bộ cùng bạn bè qua công viên",
+          "Đi xe buýt hai tầng màu đỏ (red bus)",
+          "Đi tàu điện ngầm ngầm của thành phố"
+        ],
+        correctIndex: 1,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Đoạn 1 nêu rõ: 'At eight o'clock, I take the red bus to my school.'"
+      },
+      {
+        keyword: "weekend farmer's market",
+        question: "1. Hai chị em trong bài đọc đã chọn mua những món đồ nào tại chợ để tặng mẹ?",
+        options: [
+          "Táo đỏ, chuối chín và rau củ xanh",
+          "Sữa tươi, một hũ mật ong và một bó hoa rực rỡ",
+          "Bánh mì ngọt thơm phức và bánh nướng nóng hổi"
+        ],
+        correctIndex: 1,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Đoạn cuối nêu: 'We buy fresh milk, a jar of honey, and some colorful flowers for our mother.'"
+      },
+      {
+        keyword: "language pen pal",
+        question: "1. Bạn Sơn trong bức thư thường làm gì vào mỗi buổi tối sau giờ làm việc văn phòng?",
+        options: [
+          "Leo núi ngắm cảnh gần thị trấn",
+          "Học tiếng Anh chăm chỉ mỗi tối",
+          "Chơi bóng đá và nghe nhạc cùng đồng nghiệp"
+        ],
+        correctIndex: 1,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Sơn viết: 'I work in an office and I am learning English every evening.'"
+      },
+      {
+        keyword: "waterfront zoo",
+        question: "1. Theo bài đọc, loài động vật yêu thích nhất của tác giả trong chuyến thăm sở thú là gì?",
+        options: [
+          "Những chú voi to lớn uống nước mát",
+          "Hươu cao cổ đang ăn lá cây trên cao",
+          "Những chú chim cánh cụt tinh nghịch đang bơi trong hồ"
+        ],
+        correctIndex: 2,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Tác giả viết: 'My favorite animals are the playful little penguins swimming in the pool.'"
+      },
+      {
+        keyword: "walking for brain health",
+        question: "1. Theo các bác sĩ, lợi ích nổi bật của việc đi bộ nhanh 30 phút mỗi ngày đối với não bộ là gì?",
+        options: [
+          "Tăng lưu lượng máu lên não, cải thiện trí nhớ và sự tập trung",
+          "Giúp cơ thể không bao giờ cảm thấy mệt mỏi hay mất ngủ",
+          "Thay thế hoàn toàn nhu cầu dinh dưỡng hàng ngày"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Bài viết nêu: 'When you walk, blood flow to your brain increases significantly. This helps improve memory, concentration, and emotional well-being.'"
+      },
+      {
+        keyword: "transforming european travel",
+        question: "1. Lý do du khách ngày nay ưu tiên chọn tàu cao tốc thay vì máy bay tại châu Âu là gì?",
+        options: [
+          "Tàu hỏa có tốc độ bay nhanh hơn máy bay thương mại",
+          "Ghế ngồi rộng rãi, cảnh quan đẹp và phát thải CO2 ít hơn rất nhiều so với máy bay",
+          "Vé tàu hỏa luôn được phát miễn phí trên toàn châu Âu"
+        ],
+        correctIndex: 1,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Bài viết nhấn mạnh: 'traveling by electric train produces much less carbon dioxide than flying, making it an eco-friendly journey.'"
+      },
+      {
+        keyword: "household plastic waste",
+        question: "1. Giải pháp nào sau đây được bài viết khuyến khích để giảm rác thải nhựa gia đình?",
+        options: [
+          "Sử dụng bình nước inox, hộp thủy tinh và túi vải tái sử dụng",
+          "Đốt rác thải nhựa ngay tại vườn nhà",
+          "Sử dụng thêm màng bọc nilon dùng một lần"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Bài viết nêu: 'Using stainless steel water bottles and glass food containers reduces the need for plastic wraps.'"
+      },
+      {
+        keyword: "sunday family dinners",
+        question: "1. Ý nghĩa tinh thần sâu sắc nhất của bữa cơm tối gia đình ngày Chủ nhật là gì?",
+        options: [
+          "Tiết kiệm chi phí so với việc ăn ngoài quán",
+          "Tạo cơ hội gắn kết thế hệ, chia sẻ và lưu truyền các giá trị gia đình truyền thống",
+          "Buộc các thành viên phải đạt điểm cao trong học tập"
+        ],
+        correctIndex: 1,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Bữa cơm gia đình củng cố tình thân và tạo nên những kỷ niệm ấm áp xuyên suốt nhiều thế hệ."
+      },
+      {
+        keyword: "accelerates antibiotic discovery",
+        question: "1. Theo bài đọc, ưu thế lớn nhất của AI trong việc nghiên cứu kháng sinh là gì?",
+        options: [
+          "Thay thế hoàn toàn vai trò của các bác sĩ và nhà khoa học",
+          "Rút ngắn thời gian và chi phí sàng lọc các phân tử kháng sinh mới tiềm năng",
+          "Lập tức giảm giá thành mọi loại thuốc trên thế giới về 0 đồng"
+        ],
+        correctIndex: 1,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). AI giúp rút ngắn thời gian sàng lọc hàng triệu hợp chất từ nhiều năm xuống chỉ còn vài tuần."
+      },
+      {
+        keyword: "vertical urban farming",
+        question: "1. Nông nghiệp thẳng đứng (Vertical Farming) giải quyết vấn đề lương thực đô thị như thế nào?",
+        options: [
+          "Trồng nhiều tầng trong nhà, tiết kiệm tới 95% nước và không cần quỹ đất lớn",
+          "Chuyển toàn bộ dân số đô thị về nông thôn làm nông nghiệp",
+          "Sử dụng hóa chất nhân tạo kích thích cây lớn nhanh gấp 10 lần"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Công nghệ thủy canh đa tầng giúp tiết kiệm 95% nguồn nước và trồng trọt quanh năm ngay trong lòng đô thị."
+      },
+      {
+        keyword: "atomic habits",
+        question: "1. Theo nghiên cứu tâm lý học hành vi, 4 mắt xích tạo nên 'vòng lặp thói quen' gồm những gì?",
+        options: [
+          "Gợi ý (Cue), Khát khao (Craving), Phản hồi (Response), Phần thưởng (Reward)",
+          "Bắt buộc, Kỷ luật, Trừng phạt, Lặp lại",
+          "Mục tiêu lớn, Hành động gấp, Căng thẳng, Từ bỏ"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Vòng lặp hành vi (Cue -> Craving -> Response -> Reward) là chìa khóa để kiến tạo các thói quen nguyên tử vững chắc."
+      },
+      {
+        keyword: "specialty coffee",
+        question: "1. Điểm đặc trưng phân biệt cà phê đặc sản (Specialty Coffee) với cà phê công nghiệp đại trà là gì?",
+        options: [
+          "Khả năng truy xuất nguồn gốc nông trại, quy trình sơ chế vi khí hậu và thang điểm nếm thử khắt khe",
+          "Chỉ được pha chế cùng sữa đặc có đường",
+          "Giá thành luôn rẻ nhất trong các loại đồ uống"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Cà phê đặc sản đề cao tính minh bạch vùng trồng, tay nghề sơ chế và tiêu chuẩn chấm điểm cupping quốc tế."
+      },
+      {
+        keyword: "coral reef bleaching",
+        question: "1. Hiện tượng san hô bị tẩy trắng (coral bleaching) xảy ra do phản ứng sinh học nào dưới biển?",
+        options: [
+          "Nhiệt độ nước biển tăng cao khiến san hô trục xuất vi tảo cộng sinh quang dưỡng zooxanthellae",
+          "Động vật ăn thịt săn bắt san hô với tốc độ quá nhanh",
+          "Nước biển bị nhiễm mặn nghiêm trọng"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Áp lực nhiệt độ cực đoan khiến san hô tống khứ tảo cộng sinh tạo màu sắc và nguồn năng lượng dinh dưỡng."
+      },
+      {
+        keyword: "solid-state batteries",
+        question: "1. Đột phá công nghệ lớn nhất của pin thể rắn (solid-state battery) so với pin lithium-ion hiện tại là gì?",
+        options: [
+          "Mật độ năng lượng cao hơn, sạc nhanh hơn và triệt tiêu nguy cơ cháy nổ từ chất điện phân lỏng",
+          "Pin thể rắn nặng hơn và chiếm nhiều diện tích hơn",
+          "Chỉ dùng được cho các thiết bị công suất cực nhỏ"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Thay thế chất điện phân lỏng bằng chất nền rắn triệt tiêu rủi ro nhiệt và tăng đáng kể phạm vi vận hành."
+      },
+      {
+        keyword: "reshoring and supply chain",
+        question: "1. Động lực chính thúc đẩy các tập đoàn toàn cầu áp dụng chiến lược 'reshoring' (đưa sản xuất về gần) là gì?",
+        options: [
+          "Gia tăng khả năng chống chịu trước các cú sốc gián đoạn chuỗi cung ứng và bất ổn địa chính trị",
+          "Tăng khoảng cách vận chuyển đường biển để giải quyết việc làm cho tàu chở hàng",
+          "Phụ thuộc độc quyền vào một nhà cung cấp duy nhất"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Reshoring giúp các doanh nghiệp bảo vệ chuỗi phân phối trước biến động chiến lược và thiên tai toàn cầu."
+      },
+      {
+        keyword: "bilingualism and emotional perception",
+        question: "1. Hiệu ứng ngoại ngữ (Foreign Language Effect) ảnh hưởng như thế nào đến quyết định của con người?",
+        options: [
+          "Xử lý vấn đề bằng ngôn ngữ thứ hai tạo khoảng cách cảm xúc, giúp suy xét lý trí và giảm thiên kiến",
+          "Gây hoang mang cực độ và khiến con người không thể quyết định",
+          "Làm tăng tối đa phản ứng kích động cảm tính tức thời"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Nghiên cứu chỉ ra rằng tư duy bằng ngoại ngữ kích hoạt cơ chế phân tích duy lý và giảm tác động của trực giác bốc đồng."
+      },
+      {
+        keyword: "cognitive biases in algorithmic",
+        question: "1. Tại sao các thuật toán ra quyết định tự động lại có thể kế thừa và duy trì định kiến con người?",
+        options: [
+          "Dữ liệu lịch sử huấn luyện thuật toán chứa sẵn các thiên lệch và định kiến xã hội vốn có",
+          "Các kỹ sư lập trình luôn cài đặt sự ghét bỏ vào mã nguồn",
+          "Máy tính có ý thức và cảm xúc cá nhân riêng"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Dữ liệu quá khứ phản ánh sự bất bình đẳng xã hội; nếu không được hiệu chỉnh, mô hình máy học sẽ tái hiện các thiên kiến đó."
+      },
+      {
+        keyword: "algorithmic governance",
+        question: "1. Thách thức cốt lõi mà 'quản trị thuật toán' đặt ra đối với nền dân chủ hiện đại là gì?",
+        options: [
+          "Sự thiếu minh bạch ('hộp đen') làm xói mòn trách nhiệm giải trình và tranh luận công khai của công dân",
+          "Tốc độ xử lý của máy tính quá chậm so với con người",
+          "Tất cả công chức nhà nước đều bị sa thải ngay lập tức"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Khi các quyết định hành chính bị che khuất bởi các hệ thống hộp đen bí mật, người dân mất khả năng giám sát và phản biện dân chủ."
+      },
+      {
+        keyword: "central bank digital currencies",
+        question: "1. Tiền kỹ thuật số Ngân hàng Trung ương (CBDC) được phát triển nhằm mục tiêu cơ bản nào?",
+        options: [
+          "Củng cố chủ quyền tiền tệ quốc gia và tối ưu hóa hạ tầng thanh toán số an toàn, phi tiền mặt",
+          "Xóa bỏ hoàn toàn các loại hình ngân hàng trên thế giới",
+          "Cho phép mọi cá nhân tự do phát hành tiền tệ"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). CBDC đóng vai trò là phương tiện thanh toán công đáng tin cậy, bảo vệ sự ổn định tài chính trước các loại tiền mã hóa tư nhân."
+      },
+      {
+        keyword: "boreal forest",
+        question: "1. Tại sao rừng phương bắc (Taiga) được xem là bể chứa carbon quan trọng bậc nhất của Trái Đất?",
+        options: [
+          "Lớp đất đóng băng vĩnh cửu (permafrost) và thảm than bùn tích trữ lượng carbon hữu cơ khổng lồ",
+          "Rừng taiga không bao giờ rụng lá hay mục nát",
+          "Khí hậu lạnh triệt tiêu mọi phản ứng hóa học"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Hệ sinh thái taiga cô lập hàng trăm tỷ tấn carbon; việc bảo tồn lớp băng vĩnh cửu ngăn chặn phát thải khí nhà kính ồ ạt."
+      },
+      {
+        keyword: "linguistic relativity",
+        question: "1. Giả thuyết tương đối ngôn ngữ (Sapir-Whorf) trong khoa học thần kinh nhận thức khẳng định điều gì?",
+        options: [
+          "Cấu trúc ngữ pháp và từ vựng của ngôn ngữ mẹ đẻ có thể định hình cách não bộ tri giác không gian và thời gian",
+          "Tất cả ngôn ngữ trên thế giới đều có chung một cấu trúc tư duy y hệt nhau",
+          "Ngôn ngữ không có bất kỳ ảnh hưởng nào đến nhận thức của con người"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Ngôn ngữ cung cấp các sơ đồ tư duy (mental schemas) tác động sâu sắc đến cách con người giải mã hiện thực khách quan."
+      },
+      {
+        keyword: "quantum entanglement",
+        question: "1. Hiện tượng vướng víu lượng tử (Quantum Entanglement) đã thách thức nguyên lý vật lý cổ điển nào?",
+        options: [
+          "Tính cục bộ (Locality) - hai hạt lượng tử tương tác tức thời bất chấp khoảng cách không gian vũ trụ",
+          "Định luật vạn vật hấp dẫn của Newton",
+          "Định luật bảo toàn năng lượng trong nhiệt động học"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Sự liên đới trạng thái tức thời giữa các hạt lượng tử vượt qua giới hạn tốc độ ánh sáng cục bộ, thách thức thuyết tương đối cổ điển."
+      },
+      {
+        keyword: "architectural semiotics",
+        question: "1. Dưới góc nhìn ký hiệu học đô thị, những tòa nhà kính chọc trời hiện đại phản ánh điều gì?",
+        options: [
+          "Ảo ảnh về sự minh bạch dân chủ trong khi thực tế củng cố sự giám sát tư nhân và phân tầng xã hội",
+          "Sự hòa hợp tuyệt đối và tôn trọng thiên nhiên hoang dã",
+          "Không gian công cộng miễn phí cho toàn bộ người dân thành phố"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Lớp kính ngoài tạo cảm giác cởi mở nhưng bên trong lại vận hành các cơ chế kiểm soát tư bản và cô lập không gian công cộng."
+      },
+      {
+        keyword: "epistemic injustice",
+        question: "1. 'Bất công tri thức' (Epistemic Injustice) trong nghiên cứu sinh thái biểu hiện qua khía cạnh nào?",
+        options: [
+          "Tri thức sinh thái lâu đời của cộng đồng bản địa bị giới hàn lâm gạt bỏ là giai thoại hay phi khoa học",
+          "Mọi học giả đều bị tước bỏ quyền nghiên cứu môi trường",
+          "Tri thức truyền thống chiếm đoạt toàn bộ ngân sách khoa học toàn cầu"
+        ],
+        correctIndex: 0,
+        explanation: "Chính xác! (+10 Điểm Đọc Hiểu). Sự bất công xảy ra khi các hệ thống tri thức bản địa bị gạt ra ngoài lề dù chứa đựng những quan sát thực nghiệm sinh thái vô giá."
+      }
+    ];
+
+    function getQuizForArticle(article) {
+      if (!article) return null;
+      const titleLower = (article.title || '').toLowerCase();
+      const contentLower = (article.content || '').toLowerCase();
+
+      for (const item of READING_QUIZ_BANK) {
+        if (titleLower.includes(item.keyword) || item.keyword.split(' ').every(k => titleLower.includes(k) || contentLower.includes(k))) {
+          return item;
+        }
+      }
+
+      // Dynamic fallback
+      const firstSentence = (article.content || '').split('.')[0] || article.title;
+      return {
+        question: `1. Theo bài đọc "${article.title}", nội dung trọng tâm được nhấn mạnh là gì?`,
+        options: [
+          firstSentence.length > 95 ? firstSentence.substring(0, 90) + '...' : firstSentence,
+          `Khái niệm này hoàn toàn không có ứng dụng thực tiễn trong đời sống`,
+          `Vấn đề này chỉ tồn tại trong các giả thuyết viễn tưởng`
+        ],
+        correctIndex: 0,
+        explanation: `Chính xác! (+10 Điểm Đọc Hiểu). Luận điểm chính được tác giả phân tích và làm rõ trong văn bản.`
+      };
+    }
+
+    function renderLabQuiz(article) {
+      const quiz = getQuizForArticle(article);
+      currentLabQuiz = quiz;
+      const qEl = document.getElementById('quizQuestion');
+      const optEl = document.getElementById('quizOptions');
+      const fbEl = document.getElementById('quizFeedback');
+      if (qEl) qEl.innerText = quiz.question;
+      if (fbEl) fbEl.innerHTML = '';
+      if (optEl && quiz && quiz.options) {
+        optEl.innerHTML = quiz.options.map((opt, idx) => {
+          const letter = ['A', 'B', 'C', 'D'][idx] || '';
+          return `<button class="pill-btn" style="text-align: left; padding: 0.65rem; line-height: 1.4;" onclick="checkQuiz(${idx})">${letter}. ${opt}</button>`;
+        }).join('');
+      }
+    }
+
     function checkQuiz(optIndex) {
       const fb = document.getElementById('quizFeedback');
-      if (optIndex === 1) {
-        fb.innerHTML = '<span style="color: var(--success);">Chính xác! (+10 Điểm Đọc Hiểu). AI giúp rút ngắn thời gian sàng lọc hàng nghìn phân tử kháng sinh từ nhiều năm xuống còn vài tuần.</span>';
+      if (!currentLabQuiz || !fb) return;
+      if (optIndex === currentLabQuiz.correctIndex) {
+        fb.innerHTML = `<span style="color: var(--success);">${currentLabQuiz.explanation}</span>`;
       } else {
-        fb.innerHTML = '<span style="color: var(--danger);">Chưa chính xác. Hãy đọc kỹ lại đoạn 2 của bài viết để tìm luận điểm chính.</span>';
+        fb.innerHTML = `<span style="color: var(--danger);">Chưa chính xác. Hãy đọc kỹ lại nội dung bài đọc để chọn câu trả lời đúng nhất.</span>`;
       }
     }
 

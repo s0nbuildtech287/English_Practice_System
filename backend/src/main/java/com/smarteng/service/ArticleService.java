@@ -109,7 +109,7 @@ public class ArticleService {
                                     .build();
 
                             Article saved = articleRepository.save(crawled);
-                            saved.setAudioUrl("/audio/article" + (saved.getId() % 6 == 0 ? 6 : (saved.getId() % 6)) + ".mp3");
+                            saved.setAudioUrl("");
                             return articleRepository.save(saved);
                         }
                     }
@@ -138,7 +138,7 @@ public class ArticleService {
                         .build();
 
                 Article saved = articleRepository.save(article);
-                saved.setAudioUrl("/audio/article" + (saved.getId() % 6 == 0 ? 6 : (saved.getId() % 6)) + ".mp3");
+                saved.setAudioUrl("");
                 return articleRepository.save(saved);
             }
         }
@@ -158,7 +158,7 @@ public class ArticleService {
                         "By analyzing long-term systemic effects, researchers uncover novel paradigms that foster intellectual growth and sustainable progress.")
                 .build();
         Article saved = articleRepository.save(uniqueArticle);
-        saved.setAudioUrl("/audio/article" + (saved.getId() % 6 == 0 ? 6 : (saved.getId() % 6)) + ".mp3");
+        saved.setAudioUrl("");
         return articleRepository.save(saved);
     }
 
@@ -226,6 +226,20 @@ public class ArticleService {
     public void seedInitialArticles() {
         long count = articleRepository.count();
         if (count >= 24) {
+            List<Article> existing = articleRepository.findAllByOrderByIdAsc();
+            boolean needSave = false;
+            for (int i = 0; i < existing.size(); i++) {
+                String expected = "/audio/article" + (i + 1) + ".mp3";
+                Article a = existing.get(i);
+                if (!expected.equals(a.getAudioUrl())) {
+                    a.setAudioUrl(expected);
+                    needSave = true;
+                }
+            }
+            if (needSave) {
+                articleRepository.saveAll(existing);
+                log.info("Synchronized 1-to-1 matched audio URLs for all {} existing articles.", existing.size());
+            }
             log.info("Articles library already seeded with {} articles.", count);
             return;
         }
@@ -562,8 +576,7 @@ public class ArticleService {
 
         for (int i = 0; i < articles.size(); i++) {
             Article a = articles.get(i);
-            int audioIndex = (i % 6) + 1;
-            a.setAudioUrl("/audio/article" + audioIndex + ".mp3");
+            a.setAudioUrl("/audio/article" + (i + 1) + ".mp3");
         }
 
         articleRepository.saveAll(articles);
