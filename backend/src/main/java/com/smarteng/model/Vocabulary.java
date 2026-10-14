@@ -33,4 +33,9 @@ public class Vocabulary {
 
     @Column(columnDefinition = "TEXT")
     private String exampleSentence;
+
+    private String topic;
+
+    private String cefrLevel;
 }
+

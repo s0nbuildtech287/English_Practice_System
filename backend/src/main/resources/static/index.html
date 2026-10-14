@@ -1524,22 +1524,63 @@
     <!-- ======================================================== -->
     <section id="view-notebook" class="view-container">
       <div class="academic-banner">
-        <h2>Sổ Tay Từ Vựng & Thẻ Ôn Tập Spaced Repetition (SRS)</h2>
-        <p>Hệ thống ghi nhớ dài hạn vận hành theo thuật toán ngắt quãng SM-2. Ôn tập đúng ngày đến hạn giúp khắc sâu từ vựng vào trí nhớ vĩnh viễn.</p>
+        <h2>Kho Từ Vựng Chuẩn Quốc Tế & Thẻ Ôn Tập Spaced Repetition (SRS)</h2>
+        <p>Hệ thống từ vựng học thuật chuẩn CEFR (A1 - C2), IELTS Academic, TOEIC Business, Công nghệ AI & Y tế. Tích hợp thuật toán lặp lại ngắt quãng SM-2 giúp khắc sâu vào trí nhớ vĩnh viễn.</p>
       </div>
 
       <div class="filter-bar">
         <div class="level-pills">
-          <button class="pill-btn active" id="btnTabSrs" onclick="switchNotebookSubTab('srs')">Phiên Ôn Tập Hôm Nay</button>
-          <button class="pill-btn" id="btnTabAllWords" onclick="switchNotebookSubTab('list')">Tất Cả Từ Đã Lưu</button>
+          <button class="pill-btn active" id="btnTabTopics" onclick="switchNotebookSubTab('topics')">Kho Từ Vựng Theo Chủ Đề</button>
+          <button class="pill-btn" id="btnTabSrs" onclick="switchNotebookSubTab('srs')">Phiên Ôn Tập Hôm Nay (<span id="dueBadgeCount">0 thẻ</span>)</button>
+          <button class="pill-btn" id="btnTabAllWords" onclick="switchNotebookSubTab('list')">Sổ Tay Từ Đã Lưu (<span id="totalVocabCount">0</span> từ)</button>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-sub);">
-          Tổng số từ trong sổ: <strong id="totalVocabCount" style="color: #FFFFFF;">0</strong> từ
+          Bộ dữ liệu chuẩn Cambridge / Oxford / Kaggle
         </div>
       </div>
 
-      <!-- SUBTAB 1: SRS FLASHCARD SESSION -->
-      <div id="subtabSrsSection">
+      <!-- SUBTAB 1: CURATED TOPIC LIBRARY -->
+      <div id="subtabTopicsSection">
+        <div id="topicsOverviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem;">
+          <!-- Dynamically populated via loadTopicLibrary() -->
+        </div>
+
+        <div id="topicDetailContainer" style="display: none; margin-top: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; background: var(--bg-surface); padding: 1.25rem 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+            <div>
+              <button class="btn-action-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem; margin-bottom: 0.6rem;" onclick="closeTopicDetail()">← Quay lại danh mục chủ đề</button>
+              <h3 id="curTopicTitle" style="font-size: 1.35rem; font-weight: 800; color: #FFFFFF;">
+                <span id="curTopicName"></span>
+              </h3>
+              <p id="curTopicDesc" style="font-size: 0.88rem; color: var(--text-sub); margin-top: 0.35rem;"></p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <input type="text" id="topicWordFilter" placeholder="Tìm kiếm từ trong chủ đề này..." oninput="filterTopicWords(this.value)" style="padding: 0.6rem 0.9rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; font-size: 0.85rem; min-width: 200px;">
+              <button class="btn-action-primary" style="background: var(--oxford-blue); font-size: 0.82rem; padding: 0.6rem 1rem; white-space: nowrap;" onclick="crawlMoreTopicWords()">+ Cào Thêm Từ Mới</button>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md);">
+            <table class="vocab-table">
+              <thead>
+                <tr>
+                  <th style="width: 170px;">Từ Vựng & Từ Loại</th>
+                  <th style="width: 130px;">Phiên Âm IPA</th>
+                  <th style="width: 220px;">Ý Nghĩa Tiếng Việt</th>
+                  <th>Định Nghĩa Tiếng Anh & Ví Dụ Ngữ Cảnh</th>
+                  <th style="width: 160px; text-align: center;">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="topicWordsTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB 2: SRS FLASHCARD SESSION -->
+      <div id="subtabSrsSection" style="display: none;">
         <div id="noDueMessage" style="display: none; text-align: center; padding: 4rem 1rem;">
           <h3 style="font-size: 1.3rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem;">Tuyệt Vời! Hôm Nay Đã Hoàn Thành Hết Thẻ Đến Hạn</h3>
           <p style="font-size: 0.9rem; color: var(--text-sub); margin-bottom: 1.5rem;">Không còn từ vựng nào cần ôn tập hôm nay. Hãy tiếp tục đọc thêm bài mới để tích lũy thêm từ.</p>
@@ -1846,6 +1887,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadArticles();
       loadSavedVocab();
+      loadTopicLibrary();
       initSpeechRecognition();
       renderListeningLessons();
       renderDialogueList('ALL');
@@ -2626,9 +2668,147 @@
       }
     }
 
+    // ========================================================
+    // TOPIC VOCABULARY LIBRARY (KHO TỪ THEO CHỦ ĐỀ)
+    // ========================================================
+    let topicLibraryData = [];
+    let curTopicWords = [];
+    let curTopicCode = '';
+
+    async function loadTopicLibrary() {
+      try {
+        const res = await fetch(`${API_BASE}/vocabulary/topics`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          topicLibraryData = json.data;
+          renderTopicsGrid(topicLibraryData);
+        }
+      } catch (err) {
+        console.warn('API /vocabulary/topics offline');
+      }
+    }
+
+    function renderTopicsGrid(topics) {
+      const grid = document.getElementById('topicsOverviewGrid');
+      if (!grid) return;
+      grid.innerHTML = topics.map(t => `
+        <div class="topic-card" onclick="openTopicDetail('${t.code}')" style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; cursor: pointer; transition: var(--transition);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">CHỦ ĐỀ • ${t.code}</span>
+            <span class="cefr-tag" style="background: ${t.badgeColor}22; color: ${t.badgeColor}; border: 1px solid ${t.badgeColor}55;">${t.level}</span>
+          </div>
+          <h4 style="font-size: 1.15rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.4rem;">${t.title}</h4>
+          <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 1.25rem;">${t.description}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.82rem;">
+            <span style="color: var(--text-muted); font-weight: 600;">Quy mô: <strong style="color: #93C5FD;">${t.wordCount || 10}+ từ vựng</strong></span>
+            <span style="color: var(--cambridge-gold); font-weight: 700;">Học ngay →</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function openTopicDetail(topicCode) {
+      curTopicCode = topicCode;
+      const meta = topicLibraryData.find(t => t.code === topicCode);
+      if (meta) {
+        document.getElementById('curTopicName').innerText = meta.title;
+        document.getElementById('curTopicDesc').innerText = meta.description;
+      }
+      document.getElementById('topicsOverviewGrid').style.display = 'none';
+      document.getElementById('topicDetailContainer').style.display = 'block';
+      document.getElementById('topicWordsTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-sub);">Đang tải danh sách từ vựng...</td></tr>';
+
+      try {
+        const res = await fetch(`${API_BASE}/vocabulary/topics/${topicCode}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          curTopicWords = json.data;
+          renderTopicWords(curTopicWords);
+        }
+      } catch (err) {
+        document.getElementById('topicWordsTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #F87171;">Không thể tải dữ liệu chủ đề. Vui lòng thử lại.</td></tr>';
+      }
+    }
+
+    function closeTopicDetail() {
+      document.getElementById('topicDetailContainer').style.display = 'none';
+      document.getElementById('topicsOverviewGrid').style.display = 'grid';
+      loadTopicLibrary();
+    }
+
+    function filterTopicWords(q) {
+      const clean = q.trim().toLowerCase();
+      if (!clean) {
+        renderTopicWords(curTopicWords);
+        return;
+      }
+      const filtered = curTopicWords.filter(w => 
+        (w.word && w.word.toLowerCase().includes(clean)) ||
+        (w.meaningVi && w.meaningVi.toLowerCase().includes(clean)) ||
+        (w.meaningEn && w.meaningEn.toLowerCase().includes(clean))
+      );
+      renderTopicWords(filtered);
+    }
+
+    function renderTopicWords(words) {
+      const tbody = document.getElementById('topicWordsTableBody');
+      if (!words || words.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-sub);">Chưa có từ vựng nào trong chủ đề này. Hãy bấm "Cào thêm từ mới".</td></tr>';
+        return;
+      }
+      tbody.innerHTML = words.map(w => {
+        let cleanVi = w.meaningVi || '';
+        if (cleanVi.includes('%')) {
+          try { cleanVi = decodeURIComponent(cleanVi); } catch (e) {}
+        }
+        return `
+          <tr>
+            <td>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF;">${w.word}</div>
+              <span class="cefr-tag b1" style="font-size: 0.72rem; padding: 0.15rem 0.45rem; text-transform: lowercase;">${w.partOfSpeech || 'term'}</span>
+            </td>
+            <td style="font-family: var(--font-mono); color: var(--cambridge-gold); font-size: 0.95rem;">${w.ipa || `/${w.word}/`}</td>
+            <td style="font-weight: 700; color: #93C5FD; font-size: 0.98rem; line-height: 1.45;">${cleanVi}</td>
+            <td>
+              <div style="font-size: 0.88rem; color: #E2E8F0; margin-bottom: 0.35rem;">${w.meaningEn || ''}</div>
+              ${w.exampleSentence ? `<div style="font-style: italic; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">"${w.exampleSentence}"</div>` : ''}
+            </td>
+            <td style="text-align: center;">
+              <div style="display: flex; gap: 0.4rem; justify-content: center;">
+                <button class="btn-action-outline" style="padding: 0.4rem 0.65rem; font-size: 0.78rem;" title="Phát âm" onclick="playTtsSpeech('${w.word}')">Phát Âm</button>
+                <button class="btn-action-primary" style="padding: 0.4rem 0.65rem; font-size: 0.78rem; white-space: nowrap;" title="Thêm vào sổ tay & Thẻ SRS" onclick="addWordFromTopicToNotebook('${w.word}', '${w.ipa || ''}', '${(cleanVi || '').replace(/'/g, "\\'")}', '${(w.meaningEn || '').replace(/'/g, "\\'")}', '${(w.exampleSentence || '').replace(/'/g, "\\'")}')">+ Lưu Từ</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function crawlMoreTopicWords() {
+      if (!curTopicCode) return;
+      showToast(`Đang cào nạp thêm từ vựng mới theo chủ đề ${curTopicCode}...`);
+      try {
+        const res = await fetch(`${API_BASE}/vocabulary/topics/${curTopicCode}/crawl-more`, { method: 'POST' });
+        const json = await res.json();
+        if (json.success) {
+          showToast(json.message || `Đã nạp thêm từ mới thành công!`);
+          openTopicDetail(curTopicCode);
+        }
+      } catch (e) {
+        showToast('Có lỗi khi cào nạp từ mới.');
+      }
+    }
+
+    async function addWordFromTopicToNotebook(word, ipa, vi, en, ex) {
+      await saveWordToNotebook(word, ipa, vi, en, ex);
+    }
+
     function switchNotebookSubTab(tab) {
+      document.getElementById('btnTabTopics').classList.toggle('active', tab === 'topics');
       document.getElementById('btnTabSrs').classList.toggle('active', tab === 'srs');
       document.getElementById('btnTabAllWords').classList.toggle('active', tab === 'list');
+
+      document.getElementById('subtabTopicsSection').style.display = tab === 'topics' ? 'block' : 'none';
       document.getElementById('subtabSrsSection').style.display = tab === 'srs' ? 'block' : 'none';
       document.getElementById('subtabListSection').style.display = tab === 'list' ? 'block' : 'none';
     }
