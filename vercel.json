@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/ai/ask", "destination": "/api/ai" },
+    { "source": "/(.*)", "destination": "/backend/src/main/resources/static/$1" }
+  ]
+}

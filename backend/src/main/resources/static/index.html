@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script src="/fallback-data.js"></script>
 
   <style>
     :root {
@@ -2968,13 +2969,22 @@
     async function loadArticles() {
       try {
         const res = await fetch(`${API_BASE}/articles`);
-        const json = await res.json();
-        if (json.success && json.data) {
-          articlesData = json.data;
-          renderArticlesWithPagination();
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data && json.data.length > 0) {
+            articlesData = json.data;
+            renderArticlesWithPagination();
+            return;
+          }
         }
       } catch (err) {
-        console.warn('API /articles offline, using standard CEFR data suite');
+        console.warn('API /articles offline, switching to Vercel/Local fallback mode');
+      }
+
+      // FALLBACK MODE (Vercel deployment without backend):
+      if (window.FALLBACK_DATA && window.FALLBACK_DATA.articles) {
+        articlesData = window.FALLBACK_DATA.articles;
+        renderArticlesWithPagination();
       }
     }
 
@@ -3102,42 +3112,74 @@
       btn.innerText = 'Đang Cào Dữ Liệu...';
       showToast(`Đang kết nối cổng học liệu quốc tế để cào bài đọc [${topic} - ${level}]...`);
 
+      let crawledArticle = null;
       try {
         const res = await fetch(`${API_BASE}/articles/crawl?topic=${encodeURIComponent(topic)}&level=${encodeURIComponent(level)}`, {
           method: 'POST'
         });
-        const json = await res.json();
-        if (json.success && json.data) {
-          newlyCrawledArticleIds.add(json.data.id);
-          showToast(json.message || 'Đã cào nạp thành công bài đọc mới lên đầu trang!');
-          closeCrawlArticleModal();
-          
-          // Re-fetch fresh articles list
-          const freshRes = await fetch(`${API_BASE}/articles`);
-          const freshJson = await freshRes.json();
-          if (freshJson.success && freshJson.data) {
-            articlesData = freshJson.data;
-            readingCurrentLevel = 'ALL';
-            readingCurrentTopic = 'ALL';
-            const topicSelect = document.getElementById('readingTopicSelect');
-            if (topicSelect) topicSelect.value = 'ALL';
-            document.querySelectorAll('#readingLevelFilters .pill-btn').forEach(b => {
-              b.classList.toggle('active', b.innerText.includes('Tất cả'));
-            });
-            readingCurrentPage = 1;
-            renderArticlesWithPagination();
-            const grid = document.getElementById('articlesGrid');
-            if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            crawledArticle = json.data;
           }
-        } else {
-          showToast('Không thể cào bài viết lúc này. Vui lòng thử lại.');
         }
       } catch (e) {
-        showToast('Lỗi kết nối khi cào bài viết.');
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Bắt Đầu Cào Nạp';
+        console.warn('Backend crawler offline, trying direct Wikipedia client fallback');
       }
+
+      // CLIENT-SIDE FALLBACK: Crawl directly from Wikipedia REST API if backend is offline
+      if (!crawledArticle) {
+        try {
+          const topicKeywords = {
+            'Technology': 'Artificial intelligence',
+            'Health': 'Neuroplasticity',
+            'Environment': 'Coral reef',
+            'Business': 'Supply chain',
+            'Psychology': 'Cognitive bias',
+            'Philosophy': 'Epistemology'
+          };
+          const queryTerm = topicKeywords[topic] || topic;
+          const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryTerm)}`);
+          if (wikiRes.ok) {
+            const wiki = await wikiRes.json();
+            crawledArticle = {
+              id: Date.now(),
+              title: (wiki.title || topic) + ' — Academic Exploration',
+              content: wiki.extract || 'Academic text exploring the foundations of ' + topic + '.',
+              topic: topic,
+              level: level,
+              sourceName: 'Wikipedia Academic Research',
+              durationSeconds: Math.max(90, Math.round(((wiki.extract || '').split(/\s+/).length * 60) / 120)),
+              audioUrl: ''
+            };
+          }
+        } catch (wikiErr) {
+          console.warn('Wikipedia direct crawl error:', wikiErr);
+        }
+      }
+
+      if (crawledArticle) {
+        newlyCrawledArticleIds.add(crawledArticle.id);
+        articlesData.unshift(crawledArticle);
+        showToast('Đã cào nạp thành công bài đọc mới lên đầu trang!');
+        closeCrawlArticleModal();
+        readingCurrentLevel = 'ALL';
+        readingCurrentTopic = 'ALL';
+        const topicSelect = document.getElementById('readingTopicSelect');
+        if (topicSelect) topicSelect.value = 'ALL';
+        document.querySelectorAll('#readingLevelFilters .pill-btn').forEach(b => {
+          b.classList.toggle('active', b.innerText.includes('Tất cả'));
+        });
+        readingCurrentPage = 1;
+        renderArticlesWithPagination();
+        const grid = document.getElementById('articlesGrid');
+        if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        showToast('Không thể cào bài viết lúc này. Vui lòng thử lại.');
+      }
+
+      btn.disabled = false;
+      btn.innerText = 'Bắt Đầu Cào Nạp';
     }
 
     function openReaderLab(articleId) {
@@ -4206,26 +4248,55 @@
     async function loadSavedVocab() {
       try {
         const res = await fetch(`${API_BASE}/vocab-notebook`);
-        const json = await res.json();
-        if (json.success && json.data) {
-          savedVocabData = json.data;
-          document.getElementById('totalVocabCount').innerText = savedVocabData.length;
-          renderVocabTable(savedVocabData);
-        }
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            savedVocabData = json.data;
+            document.getElementById('totalVocabCount').innerText = savedVocabData.length;
+            renderVocabTable(savedVocabData);
 
-        const dueRes = await fetch(`${API_BASE}/vocab-notebook/due`);
-        const dueJson = await dueRes.json();
-        if (dueJson.success && dueJson.data) {
-          dueCardsData = dueJson.data;
-          document.getElementById('dueBadgeCount').innerText = `${dueCardsData.length} thẻ`;
-          setupSrsSession(dueCardsData);
+            const dueRes = await fetch(`${API_BASE}/vocab-notebook/due`);
+            if (dueRes.ok) {
+              const dueJson = await dueRes.json();
+              if (dueJson.success && dueJson.data) {
+                dueCardsData = dueJson.data;
+                document.getElementById('dueBadgeCount').innerText = `${dueCardsData.length} thẻ`;
+                setupSrsSession(dueCardsData);
+                return;
+              }
+            }
+          }
         }
       } catch (err) {
-        console.warn('API /vocab-notebook offline');
+        console.warn('API /vocab-notebook offline, using localStorage fallback');
       }
+
+      // LOCALSTORAGE FALLBACK (Vercel Mode):
+      let stored = [];
+      try {
+        stored = JSON.parse(localStorage.getItem('smarteng_saved_vocab')) || [];
+      } catch (e) {}
+
+      if (stored.length === 0) {
+        stored = [
+          { id: 1, word: 'resilient', ipa: '/rɪˈzɪl.i.ənt/', meaningVi: 'Kiên cường, bền bỉ', meaningEn: 'Able to recover quickly', repetitionLevel: 2, nextReviewDate: 'Hôm nay', contextSentence: 'Scientists develop heat-resilient corals.' },
+          { id: 2, word: 'cognitive', ipa: '/ˈkɒɡ.nə.tɪv/', meaningVi: 'Thuộc về nhận thức, tư duy', meaningEn: 'Relating to cognition', repetitionLevel: 1, nextReviewDate: 'Hôm nay', contextSentence: 'Cognitive biases affect decision making.' },
+          { id: 3, word: 'serendipity', ipa: '/ˌser.ənˈdɪp.ə.ti/', meaningVi: 'Sự tình cờ may mắn', meaningEn: 'Pleasant surprises', repetitionLevel: 3, nextReviewDate: 'Hôm nay', contextSentence: 'Many breakthroughs originate from pure serendipity.' }
+        ];
+        localStorage.setItem('smarteng_saved_vocab', JSON.stringify(stored));
+      }
+
+      savedVocabData = stored;
+      document.getElementById('totalVocabCount').innerText = savedVocabData.length;
+      renderVocabTable(savedVocabData);
+
+      dueCardsData = savedVocabData.filter(v => v.nextReviewDate === 'Hôm nay' || !v.nextReviewDate);
+      document.getElementById('dueBadgeCount').innerText = `${dueCardsData.length} thẻ`;
+      setupSrsSession(dueCardsData);
     }
 
     async function saveWordToNotebook(word, ipa, vi, en, ctx) {
+      let savedViaServer = false;
       try {
         const res = await fetch(`${API_BASE}/vocab-notebook/save`, {
           method: 'POST',
@@ -4238,14 +4309,35 @@
             contextSentence: ctx || ''
           })
         });
-        const json = await res.json();
-        if (json.success) {
-          showToast(`Đã lưu "${word}" vào sổ tay từ vựng học thuật!`);
-          loadSavedVocab();
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success) savedViaServer = true;
         }
       } catch (e) {
-        showToast(`Đã lưu "${word}" vào bộ nhớ tạm.`);
+        console.warn('Saving to server offline, saving to localStorage');
       }
+
+      if (!savedViaServer) {
+        // Fallback save to localStorage:
+        let list = [];
+        try { list = JSON.parse(localStorage.getItem('smarteng_saved_vocab')) || []; } catch (e) {}
+        if (!list.some(item => item.word.toLowerCase() === word.toLowerCase())) {
+          list.unshift({
+            id: Date.now(),
+            word: word,
+            ipa: ipa || `/${word}/`,
+            meaningVi: vi || 'Từ vựng học thuật',
+            meaningEn: en || '',
+            contextSentence: ctx || '',
+            repetitionLevel: 1,
+            nextReviewDate: 'Hôm nay'
+          });
+          localStorage.setItem('smarteng_saved_vocab', JSON.stringify(list));
+        }
+      }
+
+      showToast(`Đã lưu "${word}" vào sổ tay từ vựng học thuật!`);
+      loadSavedVocab();
     }
 
     // ========================================================
@@ -4258,13 +4350,22 @@
     async function loadTopicLibrary() {
       try {
         const res = await fetch(`${API_BASE}/vocabulary/topics`);
-        const json = await res.json();
-        if (json.success && json.data) {
-          topicLibraryData = json.data;
-          renderTopicsGrid(topicLibraryData);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data && json.data.length > 0) {
+            topicLibraryData = json.data;
+            renderTopicsGrid(topicLibraryData);
+            return;
+          }
         }
       } catch (err) {
-        console.warn('API /vocabulary/topics offline');
+        console.warn('API /vocabulary/topics offline, using fallback data');
+      }
+
+      // FALLBACK MODE (Vercel deployment without backend):
+      if (window.FALLBACK_DATA && window.FALLBACK_DATA.topics) {
+        topicLibraryData = window.FALLBACK_DATA.topics;
+        renderTopicsGrid(topicLibraryData);
       }
     }
 
@@ -4310,13 +4411,25 @@
 
       try {
         const res = await fetch(`${API_BASE}/vocabulary/topics/${topicCode}`);
-        const json = await res.json();
-        if (json.success && json.data) {
-          curTopicWords = json.data;
-          curTopicFilteredWords = curTopicWords;
-          renderTopicPage();
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data && json.data.length > 0) {
+            curTopicWords = json.data;
+            curTopicFilteredWords = curTopicWords;
+            renderTopicPage();
+            return;
+          }
         }
       } catch (err) {
+        console.warn('API /vocabulary/topics/:code offline, using fallback');
+      }
+
+      // FALLBACK MODE:
+      if (window.FALLBACK_DATA && window.FALLBACK_DATA.topicWords && window.FALLBACK_DATA.topicWords[topicCode]) {
+        curTopicWords = window.FALLBACK_DATA.topicWords[topicCode];
+        curTopicFilteredWords = curTopicWords;
+        renderTopicPage();
+      } else {
         document.getElementById('topicWordsTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #F87171;">Không thể tải dữ liệu chủ đề. Vui lòng thử lại.</td></tr>';
       }
     }
@@ -4510,7 +4623,16 @@
       try {
         await fetch(`${API_BASE}/vocab-notebook/review/${card.id}?remembered=${remembered}`, { method: 'POST' });
       } catch (e) {
-        // Fallback
+        // Fallback update in localStorage (Vercel mode):
+        try {
+          let list = JSON.parse(localStorage.getItem('smarteng_saved_vocab')) || [];
+          const idx = list.findIndex(c => c.id === card.id || c.word.toLowerCase() === card.word.toLowerCase());
+          if (idx !== -1) {
+            list[idx].repetitionLevel = Math.max(1, (list[idx].repetitionLevel || 1) + (remembered ? 1 : -1));
+            list[idx].nextReviewDate = remembered ? 'Sau 3 ngày' : 'Hôm nay';
+            localStorage.setItem('smarteng_saved_vocab', JSON.stringify(list));
+          }
+        } catch (err) {}
       }
 
       currentSrsCardIndex++;
