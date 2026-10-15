@@ -1365,6 +1365,22 @@
       box-shadow: 0 0 20px rgba(52,211,153,0.3), inset 0 0 0 1px #34D399;
     }
 
+    /* Quick Goal Modal Button Styles */
+    .qg-level-btn:hover, .qg-time-btn:hover {
+      border-color: rgba(56, 189, 248, 0.5) !important;
+      background: var(--bg-surface-elevated) !important;
+    }
+    .qg-level-btn.active {
+      border-color: #38BDF8 !important;
+      background: rgba(14, 165, 233, 0.15) !important;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.3), inset 0 0 0 1px #38BDF8 !important;
+    }
+    .qg-time-btn.active {
+      border-color: #34D399 !important;
+      background: rgba(16, 185, 129, 0.15) !important;
+      box-shadow: 0 0 14px rgba(52, 211, 153, 0.3), inset 0 0 0 1px #34D399 !important;
+    }
+
     /* Navigation Buttons */
     .ob-nav {
       display: flex;
@@ -1748,24 +1764,27 @@
         <h2 class="ob-step-title">B&#x1EA1;n mu&#x1ED1;n &#x111;&#x1EA1;t &#x111;&#x1EBF;n<br>c&#x1EA5;p &#x111;&#x1ED9; n&#xE0;o?</h2>
         <p class="ob-step-sub">Ch&#x1ECD;n &#x111;&#xED;ch &#x111;&#x1EBF;n CEFR qu&#x1ED1;c t&#x1EBF; v&#xE0; th&#x1EDD;i gian r&#xE8;n luy&#x1EC7;n m&#x1ED7;i ng&#xE0;y.</p>
 
-        <div class="ob-section-label">M&#x1EE5;c ti&#xEA;u c&#x1EA5;p &#x111;&#x1ED9; CEFR h&#x01B0;&#x1EDB;ng &#x111;&#x1EBF;n:</div>
+        <div class="ob-section-label">Mục tiêu cấp độ CEFR hướng đến:</div>
         <div class="ob-levels" id="ob-target-group">
-          <div class="ob-level-pill" data-level="B1" onclick="obSelectLevel(this)">B1<small>Intermediate</small></div>
-          <div class="ob-level-pill" data-level="B2" onclick="obSelectLevel(this)">B2<small>Upper-Intermediate</small></div>
-          <div class="ob-level-pill selected" data-level="C1" onclick="obSelectLevel(this)">C1<small>Advanced Academic</small></div>
-          <div class="ob-level-pill" data-level="C2" onclick="obSelectLevel(this)">C2<small>Mastery / Fluency</small></div>
+          <div class="ob-level-pill" data-level="A1" onclick="obSelectLevel(this)">A1<small>Căn bản</small></div>
+          <div class="ob-level-pill" data-level="A2" onclick="obSelectLevel(this)">A2<small>Sơ cấp</small></div>
+          <div class="ob-level-pill selected" data-level="B1" onclick="obSelectLevel(this)">B1<small>Trung cấp</small></div>
+          <div class="ob-level-pill" data-level="B2" onclick="obSelectLevel(this)">B2<small>Trung cao</small></div>
+          <div class="ob-level-pill" data-level="C1" onclick="obSelectLevel(this)">C1<small>Cao cấp</small></div>
+          <div class="ob-level-pill" data-level="C2" onclick="obSelectLevel(this)">C2<small>Thành thạo</small></div>
         </div>
 
-        <div class="ob-section-label">Th&#x1EDD;i gian r&#xE8;n luy&#x1EC7;n m&#x1ED7;i ng&#xE0;y:</div>
+        <div class="ob-section-label">Thời gian rèn luyện mỗi ngày:</div>
         <div class="ob-times" id="ob-time-group">
-          <div class="ob-time-pill" data-time="15" onclick="obSelectTime(this)">15 ph&#xFA;t / ng&#xE0;y<small>Kh&#x1EDF;i &#x111;&#x1ED9;ng b&#x1EC1;n b&#x1EC9;</small></div>
-          <div class="ob-time-pill selected" data-time="30" onclick="obSelectTime(this)">30 ph&#xFA;t / ng&#xE0;y<small>T&#x1ED1;i &#x01B0;u &amp; hi&#x1EC7;u qu&#x1EA3; nh&#x1EA5;t</small></div>
-          <div class="ob-time-pill" data-time="60" onclick="obSelectTime(this)">60 ph&#xFA;t / ng&#xE0;y<small>T&#x0103;ng t&#x1ED1;c t&#x1ED1;i &#x111;a</small></div>
+          <div class="ob-time-pill" data-time="15" onclick="obSelectTime(this)">15 phút / ngày<small>Khởi động bền bỉ</small></div>
+          <div class="ob-time-pill selected" data-time="30" onclick="obSelectTime(this)">30 phút / ngày<small>Tối ưu & hiệu quả nhất</small></div>
+          <div class="ob-time-pill" data-time="45" onclick="obSelectTime(this)">45 phút / ngày<small>Tập trung cao độ</small></div>
+          <div class="ob-time-pill" data-time="60" onclick="obSelectTime(this)">60 phút / ngày<small>Tăng tốc tối đa</small></div>
         </div>
 
         <div class="ob-nav">
-          <button class="ob-btn-back" onclick="obGoBack(3)">&#x2190; Quay l&#x1EA1;i</button>
-          <button class="ob-btn-launch" onclick="launchPersonalizedJourney()">K&#xED;ch Ho&#x1EA1;t L&#x1ED9; Tr&#xEC;nh &amp; V&#xE0;o H&#x1ECD;c &#x2192;</button>
+          <button class="ob-btn-back" onclick="obGoBack(3)">← Quay lại</button>
+          <button class="ob-btn-launch" onclick="launchPersonalizedJourney()">Kích Hoạt Lộ Trình & Vào Học →</button>
         </div>
       </div>
 
@@ -1805,9 +1824,10 @@
     </nav>
 
     <div class="header-controls">
-      <div class="academic-stat-badge" onclick="openOnboardingModal()" style="cursor: pointer;" title="Bấm để tùy chỉnh lộ trình 3D cá nhân hóa">
+      <div class="academic-stat-badge" onclick="openQuickGoalModal()" style="cursor: pointer; transition: all 0.2s ease;" title="Bấm để tùy chỉnh mục tiêu học tập (CEFR & Thời lượng)">
         <span>Mục tiêu:</span>
-        <span class="highlight" id="headerGoalBadge">CEFR C1 Academic</span>
+        <span class="highlight" id="headerGoalBadge">CEFR B1 • 30m/d</span>
+        <span style="font-size: 0.72rem; color: var(--text-muted); margin-left: 0.15rem;">✎</span>
       </div>
       <div class="academic-stat-badge">
         <span>Từ cần ôn:</span>
@@ -2546,6 +2566,92 @@
     <button class="bottom-nav-item" onclick="switchNav('dictionary')">Dictionary</button>
     <button class="bottom-nav-item" onclick="switchNav('notebook')">Vocab</button>
     <button class="bottom-nav-item" onclick="switchNav('ai')">AI Tutor</button>
+  </div>
+
+  <!-- MODAL: QUICK GOAL CUSTOMIZATION -->
+  <div id="quickGoalModal" style="display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(10, 15, 29, 0.85); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); width: 100%; max-width: 580px; padding: 2rem; box-shadow: 0 24px 48px rgba(0,0,0,0.6); position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.85rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; gap: 0.5rem;">
+            <span>Tùy Chỉnh Mục Tiêu Học Tập</span>
+          </h3>
+          <p style="font-size: 0.82rem; color: var(--text-sub); margin-top: 0.25rem;">
+            Chọn đích đến CEFR và thời lượng học mỗi ngày phù hợp với trình độ của bạn
+          </p>
+        </div>
+        <button onclick="closeQuickGoalModal()" style="font-size: 1.35rem; color: var(--text-sub); cursor: pointer; background: transparent; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; transition: color 0.15s ease;">✕</button>
+      </div>
+
+      <!-- CEFR LEVEL SELECTOR -->
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #94A3B8; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em;">
+          1. Cấp Độ CEFR Hướng Tới:
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem;" id="quickGoalLevelGroup">
+          <button type="button" class="qg-level-btn" data-level="A1" onclick="selectQuickGoalLevel('A1')" style="padding: 0.75rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: #34D399;">A1</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.2rem;">Căn bản</div>
+          </button>
+          <button type="button" class="qg-level-btn" data-level="A2" onclick="selectQuickGoalLevel('A2')" style="padding: 0.75rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: #38BDF8;">A2</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.2rem;">Sơ cấp</div>
+          </button>
+          <button type="button" class="qg-level-btn active" data-level="B1" onclick="selectQuickGoalLevel('B1')" style="padding: 0.75rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: #60A5FA;">B1</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.2rem;">Trung cấp</div>
+          </button>
+          <button type="button" class="qg-level-btn" data-level="B2" onclick="selectQuickGoalLevel('B2')" style="padding: 0.75rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: #818CF8;">B2</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.2rem;">Trung cao</div>
+          </button>
+          <button type="button" class="qg-level-btn" data-level="C1" onclick="selectQuickGoalLevel('C1')" style="padding: 0.75rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: #A78BFA;">C1</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.2rem;">Cao cấp</div>
+          </button>
+          <button type="button" class="qg-level-btn" data-level="C2" onclick="selectQuickGoalLevel('C2')" style="padding: 0.75rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: #F472B6;">C2</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.2rem;">Thành thạo</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- DAILY TIME SELECTOR -->
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #94A3B8; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em;">
+          2. Thời Gian Rèn Luyện Mỗi Ngày:
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.65rem;" id="quickGoalTimeGroup">
+          <button type="button" class="qg-time-btn" data-time="15" onclick="selectQuickGoalTime('15')" style="padding: 0.65rem 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 700; font-size: 0.95rem;">15 phút</div>
+            <div style="font-size: 0.7rem; color: var(--text-sub); margin-top: 0.15rem;">Nhẹ nhàng</div>
+          </button>
+          <button type="button" class="qg-time-btn active" data-time="30" onclick="selectQuickGoalTime('30')" style="padding: 0.65rem 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 700; font-size: 0.95rem;">30 phút</div>
+            <div style="font-size: 0.7rem; color: var(--text-sub); margin-top: 0.15rem;">Tiêu chuẩn</div>
+          </button>
+          <button type="button" class="qg-time-btn" data-time="45" onclick="selectQuickGoalTime('45')" style="padding: 0.65rem 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 700; font-size: 0.95rem;">45 phút</div>
+            <div style="font-size: 0.7rem; color: var(--text-sub); margin-top: 0.15rem;">Chuyên sâu</div>
+          </button>
+          <button type="button" class="qg-time-btn" data-time="60" onclick="selectQuickGoalTime('60')" style="padding: 0.65rem 0.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-surface-card); color: #FFF; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <div style="font-weight: 700; font-size: 0.95rem;">60 phút</div>
+            <div style="font-size: 0.7rem; color: var(--text-sub); margin-top: 0.15rem;">Tăng tốc</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- PREVIEW & SUBMIT -->
+      <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: 0.85rem; color: #94A3B8;">Mục tiêu hiển thị:</span>
+        <strong id="quickGoalPreviewBadge" style="font-size: 1rem; color: #38BDF8; font-weight: 700;">CEFR B1 • 30m/d</strong>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button type="button" class="btn-action-outline" onclick="closeQuickGoalModal()">Hủy</button>
+        <button type="button" class="btn-action-primary" style="background: var(--oxford-blue); padding: 0.65rem 1.4rem;" onclick="saveQuickGoal()">Lưu Mục Tiêu</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: CÀO THÊM BÀI ĐỌC HỌC THUẬT -->
@@ -4537,9 +4643,85 @@
       goalText: 'Luyện Thi Quốc Tế (IELTS 7.0+)',
       baseline: 'B1-B2',
       baselineText: 'B1 – B2',
-      targetLevel: 'C1',
+      targetLevel: 'B1',
       dailyTime: '30'
     };
+
+    // =====================================================
+    // QUICK GOAL CUSTOMIZATION CONTROLLER
+    // =====================================================
+    let tempQuickGoalLevel = 'B1';
+    let tempQuickGoalTime = '30';
+
+    function openQuickGoalModal() {
+      // Load current profile or onboarding state
+      const saved = localStorage.getItem('smarteng_user_profile');
+      if (saved) {
+        try {
+          const profile = JSON.parse(saved);
+          if (profile.targetLevel) tempQuickGoalLevel = profile.targetLevel;
+          if (profile.dailyTime) tempQuickGoalTime = profile.dailyTime;
+        } catch (e) {}
+      } else if (currentOnboardingState) {
+        tempQuickGoalLevel = currentOnboardingState.targetLevel || 'B1';
+        tempQuickGoalTime = currentOnboardingState.dailyTime || '30';
+      }
+
+      updateQuickGoalModalUI();
+      const modal = document.getElementById('quickGoalModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeQuickGoalModal() {
+      const modal = document.getElementById('quickGoalModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function selectQuickGoalLevel(lvl) {
+      tempQuickGoalLevel = lvl;
+      updateQuickGoalModalUI();
+    }
+
+    function selectQuickGoalTime(t) {
+      tempQuickGoalTime = t;
+      updateQuickGoalModalUI();
+    }
+
+    function updateQuickGoalModalUI() {
+      document.querySelectorAll('#quickGoalLevelGroup .qg-level-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-level') === tempQuickGoalLevel);
+      });
+      document.querySelectorAll('#quickGoalTimeGroup .qg-time-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-time') === tempQuickGoalTime);
+      });
+      const preview = document.getElementById('quickGoalPreviewBadge');
+      if (preview) {
+        preview.innerText = `CEFR ${tempQuickGoalLevel} • ${tempQuickGoalTime}m/d`;
+      }
+    }
+
+    function saveQuickGoal() {
+      let profile = {};
+      const saved = localStorage.getItem('smarteng_user_profile');
+      if (saved) {
+        try { profile = JSON.parse(saved) || {}; } catch (e) {}
+      }
+      profile.targetLevel = tempQuickGoalLevel;
+      profile.dailyTime = tempQuickGoalTime;
+      if (!profile.baseline) {
+        profile.baseline = tempQuickGoalLevel.startsWith('A') ? 'A1-A2' : (tempQuickGoalLevel.startsWith('C') ? 'C1-C2' : 'B1-B2');
+      }
+
+      localStorage.setItem('smarteng_onboarded', 'true');
+      localStorage.setItem('smarteng_user_profile', JSON.stringify(profile));
+
+      currentOnboardingState.targetLevel = tempQuickGoalLevel;
+      currentOnboardingState.dailyTime = tempQuickGoalTime;
+
+      applyUserProfile(profile);
+      closeQuickGoalModal();
+      showToast(`Mục tiêu học tập đã lưu: CEFR ${tempQuickGoalLevel} • ${tempQuickGoalTime} phút/ngày!`);
+    }
 
     function obNextStep(currentStep) {
       const cur  = document.getElementById('ob-step-' + currentStep);
@@ -4678,15 +4860,19 @@
 
     function applyUserProfile(profile) {
       if (!profile) return;
+      const target = profile.targetLevel || 'B1';
+      const time = profile.dailyTime || '30';
       const headerGoal = document.getElementById('headerGoalBadge');
       if (headerGoal) {
-        headerGoal.innerText = `CEFR ${profile.targetLevel || 'C1'} • ${profile.dailyTime || '30'}m/d`;
+        headerGoal.innerText = `CEFR ${target} • ${time}m/d`;
       }
+      tempQuickGoalLevel = target;
+      tempQuickGoalTime = time;
 
       // Filter to user baseline if opening reading
-      if (profile.baseline === 'A1-A2') {
+      if (profile.baseline === 'A1-A2' || target === 'A1' || target === 'A2') {
         filterReading('A1');
-      } else if (profile.baseline === 'C1-C2') {
+      } else if (profile.baseline === 'C1-C2' || target === 'C1' || target === 'C2') {
         filterReading('C1');
       } else {
         filterReading('B1');
@@ -4704,8 +4890,8 @@
           return;
         } catch (e) {}
       }
-      // If first time visiting:
-      openOnboardingModal();
+      // Apply sensible default intermediate goal (CEFR B1 • 30m/d)
+      applyUserProfile({ targetLevel: 'B1', dailyTime: '30', baseline: 'B1-B2' });
     }
   </script>
 </body>

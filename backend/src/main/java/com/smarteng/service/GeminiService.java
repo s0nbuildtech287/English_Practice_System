@@ -21,7 +21,7 @@ public class GeminiService {
     @Value("${gemini.api-key:}")
     private String apiKey;
 
-    @Value("${gemini.model:gemini-3.1-flash-lite}")
+    @Value("${gemini.model:gemini-3.8-flash}")
     private String defaultModel;
 
     @jakarta.annotation.PostConstruct
@@ -53,10 +53,10 @@ public class GeminiService {
             .build();
 
     private final List<String> fallbackModels = List.of(
-            "gemini-flash-lite-latest",
+            "gemini-3.8-flash",
             "gemini-3.5-flash-lite",
-            "gemma-4-31b-it",
             "gemini-flash-latest",
+            "gemini-flash-lite-latest",
             "gemini-3.1-flash-lite"
     );
 
