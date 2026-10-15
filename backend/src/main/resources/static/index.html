@@ -5012,8 +5012,9 @@
           return;
         } catch (e) {}
       }
-      // Apply sensible default intermediate goal (CEFR B1 • 30m/d)
+      // Apply sensible default intermediate goal (CEFR B1 • 30m/d) and open intro orientation
       applyUserProfile({ targetLevel: 'B1', dailyTime: '30', baseline: 'B1-B2' });
+      openOnboardingModal();
     }
   </script>
 </body>
