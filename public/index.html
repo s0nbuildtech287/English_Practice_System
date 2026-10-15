@@ -1813,7 +1813,7 @@
 
     <!-- DESKTOP TOP NAVIGATOR (PROFESSIONAL ACADEMIC SUITE) -->
     <nav class="desktop-nav" id="desktopNav">
-      <button class="nav-btn active" onclick="switchNav('home')">Overview</button>
+      <button class="nav-btn active" onclick="switchNav('home')">Trang Chủ</button>
       <button class="nav-btn" onclick="switchNav('reading')">Reading</button>
       <button class="nav-btn" onclick="switchNav('listen')">Listening</button>
       <button class="nav-btn" onclick="switchNav('write')">Writing</button>
@@ -1842,12 +1842,56 @@
   <main class="app-shell">
 
     <!-- ======================================================== -->
-    <!-- VIEW 1: HOME (TỔNG QUAN) -->
+    <!-- VIEW 1: HOME (TRANG CHỦ GIỚI THIỆU & ĐỊNH HƯỚNG CEFR) -->
     <!-- ======================================================== -->
     <section id="view-home" class="view-container active">
-      <div class="academic-banner">
-        <h2>Cổng Đánh Giá & Rèn Luyện Toàn Diện Chuẩn CEFR</h2>
-        <p>Hệ thống học thuật chuẩn hóa năng lực ngôn ngữ theo 6 bậc Tham chiếu Châu Âu (A1 – C2). Tích hợp phương pháp Lặp lại ngắt quãng (Spaced Repetition) và trợ lý sư phạm chuyên sâu.</p>
+      <!-- HERO LANDING BANNER GIỚI THIỆU HỆ THỐNG -->
+      <div class="academic-hero-banner" style="background: linear-gradient(135deg, rgba(37,99,235,0.18) 0%, rgba(15,23,42,0.95) 100%), radial-gradient(circle at 80% 20%, rgba(56,189,248,0.15) 0%, transparent 50%); border: 1px solid rgba(56,189,248,0.28); border-radius: 16px; padding: 2.25rem 2rem; margin-bottom: 2.25rem; position: relative; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.35);">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; z-index: 2;">
+          <div style="max-width: 680px;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3); border-radius: 999px; margin-bottom: 1rem;">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #38BDF8; box-shadow: 0 0 10px #38BDF8;"></span>
+              <span style="font-size: 0.78rem; font-weight: 700; color: #38BDF8; letter-spacing: 0.05em; text-transform: uppercase;">Nền Tảng Tiếng Anh Học Thuật Toàn Diện • Chuẩn CEFR Châu Âu</span>
+            </div>
+            <h2 style="font-size: clamp(1.6rem, 3.2vw, 2.3rem); font-weight: 800; line-height: 1.25; color: #FFFFFF; margin-bottom: 0.85rem; letter-spacing: -0.02em;">
+              Chinh Phục 4 Kỹ Năng Tiếng Anh Học Thuật Cùng AI Tutor
+            </h2>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.65; margin-bottom: 1.5rem;">
+              Hệ thống rèn luyện Đọc (Reading) - Nghe (Listening) - Viết (Writing) - Nói (Speaking) chuẩn hóa từ A1 đến C2. Tích hợp từ điển 1-chạm, audio song ngữ, chấm bài thông minh và phương pháp Lặp lại ngắt quãng (Spaced Repetition SRS).
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.85rem;">
+              <button class="btn-action-primary" onclick="switchNav('reading')" style="padding: 0.75rem 1.4rem; font-size: 0.92rem; font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <span>🚀 Bắt Đầu Học Ngay (Reading)</span>
+              </button>
+              <button onclick="openOnboardingModal()" style="padding: 0.75rem 1.4rem; font-size: 0.92rem; font-weight: 700; border-radius: 10px; background: rgba(255,255,255,0.06); color: #F8FAFC; border: 1px solid rgba(255,255,255,0.18); display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.2s ease;">
+                <span style="color: #38BDF8;">✦</span> Lộ Trình Cá Nhân Hóa 3D
+              </button>
+              <button onclick="switchNav('ai')" style="padding: 0.75rem 1.2rem; font-size: 0.92rem; font-weight: 600; border-radius: 10px; background: transparent; color: #94A3B8; border: 1px solid rgba(148,163,184,0.2); cursor: pointer;">
+                Hỏi Đáp Trợ Lý AI
+              </button>
+            </div>
+          </div>
+
+          <!-- HIGHLIGHT BADGES -->
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; min-width: 260px;">
+            <div style="background: rgba(16,23,38,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem; text-align: center;">
+              <div style="font-size: 1.6rem; font-weight: 800; color: #38BDF8;">6 Cấp Độ</div>
+              <div style="font-size: 0.75rem; color: #94A3B8; margin-top: 0.2rem;">CEFR A1 Đến C2</div>
+            </div>
+            <div style="background: rgba(16,23,38,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem; text-align: center;">
+              <div style="font-size: 1.6rem; font-weight: 800; color: #10B981;">4 Kỹ Năng</div>
+              <div style="font-size: 0.75rem; color: #94A3B8; margin-top: 0.2rem;">R - L - W - S Độc Lập</div>
+            </div>
+            <div style="background: rgba(16,23,38,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem; text-align: center;">
+              <div style="font-size: 1.6rem; font-weight: 800; color: #F59E0B;">AI Gemini</div>
+              <div style="font-size: 0.75rem; color: #94A3B8; margin-top: 0.2rem;">Gia Sư Học Thuật 24/7</div>
+            </div>
+            <div style="background: rgba(16,23,38,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem; text-align: center;">
+              <div style="font-size: 1.6rem; font-weight: 800; color: #A855F7;">SRS Smart</div>
+              <div style="font-size: 0.75rem; color: #94A3B8; margin-top: 0.2rem;">Lặp Lại Ngắt Quãng</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- CEFR SCALE PROGRESS MATRIX -->
@@ -2559,7 +2603,7 @@
 
   <!-- MOBILE BOTTOM BAR FOR FLUTTER APP VIEWPORT -->
   <div class="mobile-bottom-bar">
-    <button class="bottom-nav-item active" onclick="switchNav('home')">Overview</button>
+    <button class="bottom-nav-item active" onclick="switchNav('home')">Trang Chủ</button>
     <button class="bottom-nav-item" onclick="switchNav('reading')">Reading</button>
     <button class="bottom-nav-item" onclick="switchNav('listen')">Listening</button>
     <button class="bottom-nav-item" onclick="switchNav('write')">Writing</button>
